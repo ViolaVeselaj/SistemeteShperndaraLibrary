@@ -1,8 +1,9 @@
 package com.example.sistemeteshperndara.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.library.model.Book;
-import com.library.service.BookService;
+import com.example.sistemeteshperndara.model.Book;
+import com.example.sistemeteshperndara.service.BookService;
 
 import java.util.List;
 

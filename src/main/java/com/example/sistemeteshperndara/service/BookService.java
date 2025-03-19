@@ -1,8 +1,9 @@
 package com.example.sistemeteshperndara.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.library.model.Book;
-import com.library.repository.BookRepository;
+import com.example.sistemeteshperndara.model.Book;
+import com.example.sistemeteshperndara.repository.BookRepository;
 
 import java.util.List;
 
