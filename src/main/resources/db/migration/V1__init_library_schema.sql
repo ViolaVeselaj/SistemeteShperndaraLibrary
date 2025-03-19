@@ -1,7 +1,7 @@
 -- V1: Initial Schema for Library Management System
 
 -- Table for Users
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS user (
                                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                      name VARCHAR(255) NOT NULL,
                                      email VARCHAR(255) UNIQUE NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Table for Books
-CREATE TABLE IF NOT EXISTS books (
+CREATE TABLE IF NOT EXISTS book (
                                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                      title VARCHAR(255) NOT NULL,
                                      author VARCHAR(255) NOT NULL,
@@ -21,13 +21,13 @@ CREATE TABLE IF NOT EXISTS books (
 );
 
 -- Table for Loans (Tracking Borrowed Books)
-CREATE TABLE IF NOT EXISTS loans (
+CREATE TABLE IF NOT EXISTS loan (
                                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                      user_id BIGINT NOT NULL,
                                      book_id BIGINT NOT NULL,
                                      borrow_date DATE NOT NULL,
                                      return_date DATE,
                                      status ENUM('BORROWED', 'RETURNED') DEFAULT 'BORROWED',
-                                     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-                                     FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
+                                     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+                                     FOREIGN KEY (book_id) REFERENCES book(id) ON DELETE CASCADE
 );
