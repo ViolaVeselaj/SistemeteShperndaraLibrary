@@ -24,3 +24,4 @@ public class BookController {
         return "Libri u shtua me sukses!";
     }
 }
+//base controller metodat by default tani mi thirr nkontrollera tjer
