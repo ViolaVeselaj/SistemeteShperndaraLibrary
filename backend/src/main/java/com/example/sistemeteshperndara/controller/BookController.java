@@ -18,7 +18,7 @@ public class BookController {
         return bookService.getAllBooks();
     }
 
-    @PostMapping("/add")
+    @PostMapping
     public String addBook(@RequestBody Book book) {
         bookService.saveBook(book);
         return "Libri u shtua me sukses!";
