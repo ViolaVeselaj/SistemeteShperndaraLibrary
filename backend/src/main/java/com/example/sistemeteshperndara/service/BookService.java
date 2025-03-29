@@ -13,7 +13,7 @@ public class BookService {
     private BookRepository bookRepository;
 
     public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+        return bookRepository.findAll(); //filter(tenant_id=this.user.getTenantId());
     }
 
     public void saveBook(Book book) {
