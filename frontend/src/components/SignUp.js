@@ -452,8 +452,6 @@ const SignUp = () => {
          } catch (error) {
             notify(error.response?.data || "Signup failed!", "error"); 
          }
-   
-         notify("You have successfully Signed Up!","success");
       }else{
          notify("Please fill all the fields correctly!", "error");
          setTouched({
@@ -516,9 +514,9 @@ const SignUp = () => {
                </InputContainer>
                <div className="relativeContainer">
                <select name="select" value={data.select} onChange={handleChange} onFocus={handleTouch} className="inputClass">
-                     <option value="USER">Work Meeting</option>
-                     <option value="LIBRARIAN">Consultation</option>
-                     <option value="">Marketing</option>
+                     <option value="USER">USER</option>
+                     <option value="LIBRARIAN">LIBRARIAN</option>
+                     <option value="ADMIN">ADMIN</option>
                </select>
                {errors.select && touched.select && <span className="errors">{errors.select}</span>}
                </div>

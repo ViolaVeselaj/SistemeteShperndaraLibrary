@@ -4,6 +4,7 @@ import { validation } from "./validation";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { notify } from "./toast";
+import axios from "axios";
 // import { Link } from "react-router-dom/cjs/react-router-dom"; for v5
 import { Link } from "react-router-dom";
 import useTitle from "../Hooks/useTitle";
@@ -416,10 +417,23 @@ const Login = () => {
       });
    };
 
-   const handleSubmit = (event) => {
+   const handleSubmit = async (event) => {
       event.preventDefault();
       if(!Object.keys(errors).length){
-         notify("Successful Login!","success");
+         try {
+            const response = await axios.post("http://localhost:8080/auth/login", {
+               email: data.email,
+               password: data.password
+            });
+   
+            
+            notify("Successful Login!", "success");
+            
+   
+         } catch (error) {
+            notify("Invalid Username or Password!", "error");
+            console.error("Login error:", error);
+         }
       }else{
          notify("Invalid Username or Password!", "error");
          setTouched({

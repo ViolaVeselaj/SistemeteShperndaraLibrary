@@ -1,34 +1,55 @@
 package com.example.sistemeteshperndara.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import java.time.Instant;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@Entity
+@Table(name = "loan")
 public class Loan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
-    private Date borrowDate;
-    private Date returnDate;
+    @Column(name = "borrow_date")
+    private Instant borrowDate;
 
-    @Enumerated(EnumType.STRING)
-    private Status status;
+    @Column(name = "return_date")
+    private Instant returnDate;
 
-    public enum Status {
-        BORROWED, RETURNED
-    }
+    @ColumnDefault("'BORROWED'")
+    @Lob
+    @Column(name = "status")
+    private String status;
+
+    @ColumnDefault("1")
+    @Column(name = "tenant_id", nullable = false)
+    private Long tenantId;
+
 }

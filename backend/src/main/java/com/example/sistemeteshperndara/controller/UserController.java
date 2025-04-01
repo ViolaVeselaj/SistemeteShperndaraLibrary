@@ -27,7 +27,7 @@ public class UserController {
         if (user.getName() == null || user.getEmail() == null || user.getPassword() == null) {
             return ResponseEntity.badRequest().body("All fields are required.");
         }
-
+        user.setTenantId(1L);
         userService.saveUser(user);
         return ResponseEntity.ok("User registered successfully!");
     }
