@@ -4,9 +4,11 @@ import com.example.sistemeteshperndara.model.User;
 import com.example.sistemeteshperndara.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -19,9 +21,14 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+
     @PostMapping("/add")
-    public String addUser(@RequestBody User user) {
+    public ResponseEntity<String> addUser(@RequestBody User user) {
+        if (user.getName() == null || user.getEmail() == null || user.getPassword() == null) {
+            return ResponseEntity.badRequest().body("All fields are required.");
+        }
+
         userService.saveUser(user);
-        return "Përdoruesi u shtua me sukses!";
+        return ResponseEntity.ok("User registered successfully!");
     }
 }
