@@ -1,10 +1,10 @@
 import React from "react";
-import Forms from "./components/Forms";
+import UserProfile from "./components/UserProfile";
 
 const App = () => {
-   return (
-    <Forms />
-   );
-}
+  return (
+    <UserProfile />
+  );
+};
 
 export default App;
