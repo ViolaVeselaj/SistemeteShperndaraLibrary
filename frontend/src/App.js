@@ -1,9 +1,9 @@
 import React from "react";
-import UserProfile from "./components/UserProfile";
+import HomePage from "./components/HomePage";
 
 const App = () => {
   return (
-    <UserProfile />
+    <HomePage />
   );
 };
 
