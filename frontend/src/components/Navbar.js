@@ -1,6 +1,7 @@
 // src/components/Navbar.js
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import SideMenu from "./SideMenu";
 
 const NavbarContainer = styled.div`
   position: fixed;
@@ -17,12 +18,21 @@ const NavbarContainer = styled.div`
   box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 `;
 
+const SideMenuButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+`;
+
 const NavLogo = styled.div`
   display: flex;
   align-items: center;
   font-size: 1.2rem;
   font-weight: bold;
   color: white;
+  margin-left: 50px;
 
   img {
     width: 32px;
@@ -66,21 +76,28 @@ const NavButton = styled.button`
 `;
 
 const Navbar = ({ titles = [] }) => {
+  const [open, setOpen] = useState(false);
+
   return (
-    <NavbarContainer>
-      <NavLogo>
-        <img src="/logo192.png" alt="Logo" />
-        Library
-      </NavLogo>
+    <>
+      <SideMenu open={open} setOpen={setOpen} />
+      <NavbarContainer>
+        <SideMenuButton onClick={() => setOpen(true)}>☰</SideMenuButton>
 
-      <NavLinks>
-        {titles.map((title, index) => (
-          <span key={index}>{title}</span>
-        ))}
-      </NavLinks>
+        <NavLogo>
+          <img src="/logo192.png" alt="Logo" />
+          Library
+        </NavLogo>
 
-      <NavButton>Log Out</NavButton>
-    </NavbarContainer>
+        <NavLinks>
+          {titles.map((title, index) => (
+            <span key={index}>{title}</span>
+          ))}
+        </NavLinks>
+
+        <NavButton>Log Out</NavButton>
+      </NavbarContainer>
+    </>
   );
 };
 

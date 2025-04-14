@@ -3,7 +3,6 @@ import styled from "styled-components";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
-// === Styled Components ===
 const LayoutWrapper = styled.div`
   padding: 100px 2rem 2rem 2rem;
   min-height: 100vh;
@@ -22,12 +21,15 @@ const LayoutSelector = styled.select`
 `;
 
 const BookGrid = styled.div`
-  display: grid;
-  grid-template-columns: ${({ layout }) =>
-    layout === "grid" ? "repeat(3, 1fr)" : "1fr"};
+  display: ${({ layout }) => (layout === "single" ? "flex" : "grid")};
+  flex-direction: column;
   gap: 2rem;
   margin-top: 2rem;
+
+  grid-template-columns: ${({ layout }) =>
+    layout === "grid" ? "repeat(5, 1fr)" : "1fr"};
 `;
+
 
 const BookCard = styled.div`
   background: #fff;
@@ -55,6 +57,7 @@ const BookCard = styled.div`
     color: #555;
   }
 `;
+
 
 const CarouselWrapper = styled.div`
   display: flex;
@@ -107,7 +110,6 @@ const HorizontalBookCard = styled(BookCard)`
   flex: 0 0 200px;
 `;
 
-// === Komponenti ===
 const UserHomePage = () => {
   const [layout, setLayout] = useState("grid");
 
@@ -143,6 +145,7 @@ const UserHomePage = () => {
     );
   }, [layout]);
 
+
   return (
     <>
       <Navbar titles={["Ballina", "Rekomandime", "Biblioteka Ime"]} />
@@ -169,17 +172,24 @@ const UserHomePage = () => {
           </BookGrid>
         )}
 
+
         {layout === "single" && (
           <BookGrid layout="single">
             {mockBooks.map((book) => (
               <BookCard key={book.id}>
                 <img src={book.image} alt={book.title} />
-                <h3>{book.title}</h3>
-                <p>{book.author}</p>
+                <div className="info">
+                  <h3>{book.title}</h3>
+                  <p className="author">{book.author}</p>
+                  <p className="description">
+                    Ky është një përshkrim i librit që do të vijë nga databaza. Ai mund të përmbajë përmbajtje, mesazhe ose informacione për autorin.
+                  </p>
+                </div>
               </BookCard>
             ))}
           </BookGrid>
         )}
+
 
         {layout === "carousel" && (
           <CarouselWrapper>
