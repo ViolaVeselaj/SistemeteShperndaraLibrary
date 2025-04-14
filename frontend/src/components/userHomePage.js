@@ -151,6 +151,7 @@ const UserHomePage = () => {
   return (
     <>
       <Navbar titles={["Ballina", "Rekomandime", "Biblioteka Ime"]} />
+      
       <SearchBar books={mockBooks} />
 
       <LayoutWrapper>

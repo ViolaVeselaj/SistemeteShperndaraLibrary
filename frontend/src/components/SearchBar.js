@@ -7,6 +7,7 @@ const SearchWrapper = styled.div`
   display: flex;
   justify-content: center;
   padding: 2rem 1rem;
+  margin-top: 70px;
 `;
 
 const SearchInputWrapper = styled.div`
