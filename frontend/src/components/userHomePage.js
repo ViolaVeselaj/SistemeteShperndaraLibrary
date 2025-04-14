@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import SearchBar from "../components/SearchBar";
+
 
 const LayoutWrapper = styled.div`
   padding: 100px 2rem 2rem 2rem;
@@ -149,6 +151,8 @@ const UserHomePage = () => {
   return (
     <>
       <Navbar titles={["Ballina", "Rekomandime", "Biblioteka Ime"]} />
+      <SearchBar books={mockBooks} />
+
       <LayoutWrapper>
         <LayoutSelector
           value={layout}

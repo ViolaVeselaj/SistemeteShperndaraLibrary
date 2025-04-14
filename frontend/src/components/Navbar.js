@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import SideMenu from "./SideMenu";
+import { Link } from "react-router-dom";
+
 
 const NavbarContainer = styled.div`
   position: fixed;
@@ -26,18 +28,16 @@ const SideMenuButton = styled.button`
   cursor: pointer;
 `;
 
-const NavLogo = styled.div`
+const NavLogo = styled(Link)`
   display: flex;
   align-items: center;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: white;
-  margin-left: 50px;
+  height: 100%;
+  margin-left: 20px;
+  text-decoration: none;
 
   img {
-    width: 32px;
-    height: 32px;
-    margin-right: 10px;
+    height: 48px; /* më i vogël se navbar (64px), por përshtatet vizualisht */
+    width: auto;
   }
 `;
 
@@ -84,9 +84,9 @@ const Navbar = ({ titles = [] }) => {
       <NavbarContainer>
         <SideMenuButton onClick={() => setOpen(true)}>☰</SideMenuButton>
 
-        <NavLogo>
+
+        <NavLogo to="/userHomePage">
           <img src="/logo192.png" alt="Logo" />
-          Library
         </NavLogo>
 
         <NavLinks>
