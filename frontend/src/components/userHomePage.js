@@ -1,84 +1,220 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
 
-const Layout = () => {
-  const [layout, setLayout] = useState("single-column");
-
-  return (
-    <PageWrapper>
-      <Navbar>
-        <LogoSection>LOGO</LogoSection>
-        <NavItems>
-          <label>Select Layout:</label>
-          <select value={layout} onChange={(e) => setLayout(e.target.value)}>
-            <option value="single-column">Single Column</option>
-            <option value="split-screen">Split Screen</option>
-            <option value="zigzag">Zigzag</option>
-            <option value="modular-grid">Modular Grid</option>
-            <option value="asymmetrical">Asymmetrical</option>
-          </select>
-        </NavItems>
-      </Navbar>
-
-      <ContentArea>
-        <h1>{layout.replace(/-/g, ' ').toUpperCase()} Layout Selected</h1>
-        {/* This is where different layouts can be conditionally rendered later */}
-      </ContentArea>
-
-      <Footer>
-        {/* Content to be added in next steps */}
-      </Footer>
-    </PageWrapper>
-  );
-};
-
-export default Layout;
-
-const PageWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-`;
-
-const Navbar = styled.nav`
-  display: flex;
-  background-color: #001f3f;
+// === Styled Components ===
+const LayoutWrapper = styled.div`
+  padding: 100px 2rem 2rem 2rem;
+  min-height: 100vh;
+  background: linear-gradient(to right, #2b2c49, #5d317b);
   color: white;
+`;
+
+const LayoutSelector = styled.select`
+  margin: 1rem 0;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  background-color: #3023ae;
+  color: white;
+`;
+
+const BookGrid = styled.div`
+  display: grid;
+  grid-template-columns: ${({ layout }) =>
+    layout === "grid" ? "repeat(3, 1fr)" : "1fr"};
+  gap: 2rem;
+  margin-top: 2rem;
+`;
+
+const BookCard = styled.div`
+  background: #fff;
+  color: #222;
+  border-radius: 10px;
   padding: 1rem;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const LogoSection = styled.div`
-  width: 20%;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   text-align: center;
-  font-weight: bold;
-  font-size: 1.2rem;
-`;
 
-const NavItems = styled.div`
-  width: 80%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 1rem;
+  img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+  }
 
-  select {
-    padding: 0.4rem;
-    font-size: 1rem;
+  h3 {
+    font-size: 1.1rem;
+    margin: 0.5rem 0 0.2rem;
+  }
+
+  p {
+    font-size: 0.95rem;
+    color: #555;
   }
 `;
 
-const ContentArea = styled.main`
-  flex: 1;
-  padding: 2rem;
-  background: #f0f0f5;
-  color: #333;
+const CarouselWrapper = styled.div`
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding-bottom: 1rem;
+
+  &::-webkit-scrollbar {
+    height: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+  }
 `;
 
-const Footer = styled.footer`
-  background-color: #001f3f;
-  color: white;
-  padding: 1rem;
-  text-align: center;
+const CarouselCard = styled(BookCard)`
+  flex: 0 0 300px;
 `;
+
+const HorizontalScrollSection = styled.div`
+  margin-top: 3rem;
+
+  h2 {
+    color: #ffb6ec;
+    margin-bottom: 1rem;
+  }
+`;
+
+const HorizontalScrollContainer = styled.div`
+  display: flex;
+  overflow-x: auto;
+  gap: 1.2rem;
+  padding-bottom: 1rem;
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 6px;
+  }
+`;
+
+const HorizontalBookCard = styled(BookCard)`
+  flex: 0 0 200px;
+`;
+
+// === Komponenti ===
+const UserHomePage = () => {
+  const [layout, setLayout] = useState("grid");
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const mockBooks = useMemo(
+    () =>
+      Array.from({ length: 15 }, (_, i) => ({
+        id: i,
+        title: `Libri ${i + 1}`,
+        author: `Autori ${i + 1}`,
+        image:
+          "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60",
+      })),
+    []
+  );
+
+  const genres = ["Roman", "Frymëzim", "Shkencë", "Fantazi", "Histori"];
+
+  const genreBooks = useMemo(() => {
+    if (layout !== "horizontal") return [];
+    return genres.map((genre, index) =>
+      Array.from({ length: 10 }, (_, i) => ({
+        id: `${index}-${i}`,
+        title: `${genre} - Libri ${i + 1}`,
+        author: `Autori ${i + 1}`,
+        genre,
+        image:
+          "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60",
+      }))
+    );
+  }, [layout]);
+
+  return (
+    <>
+      <Navbar titles={["Ballina", "Rekomandime", "Biblioteka Ime"]} />
+      <LayoutWrapper>
+        <LayoutSelector
+          value={layout}
+          onChange={(e) => setLayout(e.target.value)}
+        >
+          <option value="grid">Grid Layout</option>
+          <option value="single">Single Column</option>
+          <option value="carousel">Carousel</option>
+          <option value="horizontal">Sipas Zhanrit</option>
+        </LayoutSelector>
+
+        {layout === "grid" && (
+          <BookGrid layout="grid">
+            {mockBooks.map((book) => (
+              <BookCard key={book.id}>
+                <img src={book.image} alt={book.title} />
+                <h3>{book.title}</h3>
+                <p>{book.author}</p>
+              </BookCard>
+            ))}
+          </BookGrid>
+        )}
+
+        {layout === "single" && (
+          <BookGrid layout="single">
+            {mockBooks.map((book) => (
+              <BookCard key={book.id}>
+                <img src={book.image} alt={book.title} />
+                <h3>{book.title}</h3>
+                <p>{book.author}</p>
+              </BookCard>
+            ))}
+          </BookGrid>
+        )}
+
+        {layout === "carousel" && (
+          <CarouselWrapper>
+            {mockBooks.map((book) => (
+              <CarouselCard key={book.id}>
+                <img src={book.image} alt={book.title} />
+                <h3>{book.title}</h3>
+                <p>{book.author}</p>
+              </CarouselCard>
+            ))}
+          </CarouselWrapper>
+        )}
+
+        {layout === "horizontal" && (
+          <>
+            {genreBooks.map((books, idx) => (
+              <HorizontalScrollSection key={idx}>
+                <h2>{genres[idx]}</h2>
+                <HorizontalScrollContainer>
+                  {books.map((book) => (
+                    <HorizontalBookCard key={book.id}>
+                      <img src={book.image} alt={book.title} />
+                      <h3>{book.title}</h3>
+                      <p>{book.author}</p>
+                    </HorizontalBookCard>
+                  ))}
+                </HorizontalScrollContainer>
+              </HorizontalScrollSection>
+            ))}
+          </>
+        )}
+      </LayoutWrapper>
+      <Footer />
+    </>
+  );
+};
+
+export default UserHomePage;
