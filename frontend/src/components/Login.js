@@ -8,6 +8,10 @@ import axios from "axios";
 // import { Link } from "react-router-dom/cjs/react-router-dom"; for v5
 import { Link } from "react-router-dom";
 import useTitle from "../Hooks/useTitle";
+import { useUser } from "./UserContext";
+import { useNavigate } from "react-router-dom";
+
+
 
 const Container = styled.div`
   min-height: 100vh;
@@ -395,97 +399,113 @@ const SignUpButton = styled.div`
 `;
 
 const Login = () => {
-
    const [data, setData] = useState({
-      email: "",
-      password: ""
+     email: "",
+     password: ""
    });
-
+ 
    const [errors, setErrors] = useState({});
    const [touched, setTouched] = useState({});
-
+ 
+   const navigate = useNavigate();
+   const { setUser } = useUser();
+ 
    useTitle("Login Form");
-
-   useEffect(()=>{
-      setErrors(validation(data, "login"));
+ 
+   useEffect(() => {
+     setErrors(validation(data, "login"));
    }, [data, touched]);
-
-   const handleTouch = (event)=>{
-      setTouched({
-         ...touched,
-         [event.target.name]: true,
-      });
+ 
+   const handleTouch = (event) => {
+     setTouched({
+       ...touched,
+       [event.target.name]: true,
+     });
    };
-
+ 
    const handleSubmit = async (event) => {
       event.preventDefault();
-      if(!Object.keys(errors).length){
-         try {
-            const response = await axios.post("http://localhost:8080/auth/login", {
-               email: data.email,
-               password: data.password
-            });
-   
-            
-            notify("Successful Login!", "success");
-            
-   
-         } catch (error) {
-            notify("Invalid Username or Password!", "error");
-            console.error("Login error:", error);
-         }
-      }else{
-         notify("Invalid Username or Password!", "error");
-         setTouched({
-            email: true,
-            password: true
-         });
-      }
-   };
-
-   const handleChange = (event)=>{
-        setData({
-            ...data,
-            [event.target.name]: event.target.value
-        });
-        if (event.target.value) {
-            event.target.style.background = "#ffffff";
-            event.target.style.color = "#000000";
-        } else {
-            event.target.style.background = "transparent";
-            event.target.style.color = "transparent";
+    
+      if (!Object.keys(errors).length) {
+        try {
+          const response = await axios.post("http://localhost:8080/auth/login", {
+            email: data.email,
+            password: data.password
+          });
+    
+          const userData = response.data;
+          console.log("User Data:", userData); // 👈 Debug për të parë rolin
+    
+          setUser(userData);
+          notify("Successful Login!", "success");
+    
+          // Navigo sipas rolit
+          if (userData.role === "ADMIN") {
+            navigate("/admin");
+          } else if (userData.role === "USER") {
+            navigate("/userHomePage");
+          } else {
+            notify("Roli i panjohur!", "error");
+            navigate("/"); // fallback në home nëse nuk ka rol të njohur
+          }
+    
+        } catch (error) {
+          notify("Invalid Username or Password!", "error");
+          console.error("Login error:", error);
         }
+      } else {
+        notify("Please fill all fields correctly!", "error");
+        setTouched({
+          email: true,
+          password: true
+        });
+      }
+    };
+    
+   const handleChange = (event) => {
+     setData({
+       ...data,
+       [event.target.name]: event.target.value
+     });
+     if (event.target.value) {
+       event.target.style.background = "#ffffff";
+       event.target.style.color = "#000000";
+     } else {
+       event.target.style.background = "transparent";
+       event.target.style.color = "transparent";
+     }
    };
-
+ 
    return (
-    <Container>
-      <FormContainer>
-        <p>Log In </p>
-        <form onSubmit={handleSubmit}>
-               <InputContainer>
-                  <label className="labelClass">Email Address</label>
-                  <input type="text" name="email" value={data.email} className="inputClass" onChange={handleChange} onFocus={handleTouch}  />
-                  {errors.email && touched.email && <span className="errors">{errors.email}</span>}
-               </InputContainer>
-               <InputContainer>
-                  <label className="labelClass">Password</label>
-                  <input type="password" name="password" value={data.password} className="inputClass" onChange={handleChange} onFocus={handleTouch}  />
-                  {errors.password && touched.password && <span className="errors">{errors.password}</span>}
-               </InputContainer>
-               <div className="buttonContainer">
-                  <button type="submit" className="Login">
-                     Login
-                  </button>
-               </div>
-        </form>
+     <Container>
+       <FormContainer>
+         <p>Log In </p>
+         <form onSubmit={handleSubmit}>
+           <InputContainer>
+             <label className="labelClass">Email Address</label>
+             <input type="text" name="email" value={data.email} className="inputClass" onChange={handleChange} onFocus={handleTouch} />
+             {errors.email && touched.email && <span className="errors">{errors.email}</span>}
+           </InputContainer>
+           <InputContainer>
+             <label className="labelClass">Password</label>
+             <input type="password" name="password" value={data.password} className="inputClass" onChange={handleChange} onFocus={handleTouch} />
+             {errors.password && touched.password && <span className="errors">{errors.password}</span>}
+           </InputContainer>
+           <div className="buttonContainer">
+             <button type="submit" className="Login">
+               Login
+             </button>
+           </div>
+         </form>
          <SignUpButton>
-            <Link to="/signup">Sign Up</Link>
-            <span></span>
-        </SignUpButton>
-      </FormContainer>
-      <ToastContainer />
-    </Container>
+           <Link to="/signup">Sign Up</Link>
+           <span></span>
+         </SignUpButton>
+       </FormContainer>
+       <ToastContainer />
+     </Container>
    );
-};
-
-export default Login;
+ };
+ 
+ export default Login;
+ 
