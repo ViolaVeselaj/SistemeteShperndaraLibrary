@@ -1,11 +1,17 @@
 package com.example.sistemeteshperndara.controller;
 
+import com.example.sistemeteshperndara.dto.AuthRequest;
+import com.example.sistemeteshperndara.dto.AuthResponse;
 import com.example.sistemeteshperndara.model.User;
 import com.example.sistemeteshperndara.repository.UserRepository;
+import com.example.sistemeteshperndara.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -18,19 +24,36 @@ public class AuthController {
     private UserRepository userRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private JwtService jwtService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User loginRequest) {
-        Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
+    public ResponseEntity<?> login(@RequestBody AuthRequest loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getEmail(),
+                        loginRequest.getPassword()
+                )
+        );
 
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-                return ResponseEntity.ok(user);
-            }
+        Optional<User> optionalUser = userRepository.findByEmail(loginRequest.getEmail());
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.status(401).body("User not found");
         }
 
-        return ResponseEntity.status(401).body("Invalid email or password");
+        User user = optionalUser.get();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String token = jwtService.generateToken(userDetails, user.getTenantId());
+
+
+        AuthResponse response = new AuthResponse();
+        response.setToken(token);
+        response.setEmail(user.getEmail());
+        response.setName(user.getName());
+        response.setRole(user.getRole());
+
+        return ResponseEntity.ok(response);
     }
 }
