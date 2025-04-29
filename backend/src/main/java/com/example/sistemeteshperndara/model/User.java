@@ -3,6 +3,9 @@ package com.example.sistemeteshperndara.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import com.example.sistemeteshperndara.model.User;
+
+
 
 import java.time.Instant;
 

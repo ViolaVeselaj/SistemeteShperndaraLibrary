@@ -1,7 +1,7 @@
 package com.example.sistemeteshperndara.security;
 
-import com.example.library.model.User;
-import com.example.library.repository.UserRepository;
+import com.example.sistemeteshperndara.model.User;
+import com.example.sistemeteshperndara.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,7 +29,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                getAuthorities(user.getRole())
+                getAuthorities(user.getRole().name())
+
         );
     }
 
