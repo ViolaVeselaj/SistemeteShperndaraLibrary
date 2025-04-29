@@ -1,9 +1,9 @@
 import React from "react";
-import HomePage from "./components/userHomePage";
-import AdminPage from "./components/AdminPage";
-import Login from "./components/Login";
-import SignUp from "./components/SignUp";
-import AppRoutes from "./components/Routes";
+import HomePage from "./components/User/userHomePage";
+import AdminPage from "./components/Admin/AdminPage";
+import Login from "./components/auth/Login";
+import SignUp from "./components/auth/SignUp";
+import AppRoutes from "./components/routes/Routes";
 
 const App = () => {
   return <AppRoutes />;

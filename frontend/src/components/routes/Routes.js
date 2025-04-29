@@ -1,11 +1,11 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import HomePage from "./HomePage";
-import Login from "./Login";
-import SignUp from "./SignUp";
-import UserHomePage from "./userHomePage";
+import HomePage from "../common/HomePage";
+import Login from "../auth/Login";
+import SignUp from "../auth/SignUp";
+import UserHomePage from "../User/userHomePage";
 import PrivateRoute from "./PrivateRoute";
-import AdminPage from "./AdminPage";
+import AdminPage from "../Admin/AdminPage";
 
 const AppRoutes = () => {
   return (

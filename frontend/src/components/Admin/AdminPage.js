@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import Navbar from "./Navbar";
-import BookCard from "./BookCard";
+import Navbar from "../common/Navbar";
+import BookCard from "../common/BookCard";
 
 const Wrapper = styled.div`
   display: flex;

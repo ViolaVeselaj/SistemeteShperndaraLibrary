@@ -1,8 +1,9 @@
 // src/components/Navbar.js
 import React, { useState } from "react";
 import styled from "styled-components";
-import SideMenu from "./SideMenu";
+import SideMenu from "../User/SideMenu";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
 const NavbarContainer = styled.div`
@@ -77,6 +78,7 @@ const NavButton = styled.button`
 
 const Navbar = ({ titles = [] }) => {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -95,7 +97,7 @@ const Navbar = ({ titles = [] }) => {
           ))}
         </NavLinks>
 
-        <NavButton>Log Out</NavButton>
+        <NavButton onClick={() => navigate("/login")}>Log Out</NavButton>
       </NavbarContainer>
     </>
   );

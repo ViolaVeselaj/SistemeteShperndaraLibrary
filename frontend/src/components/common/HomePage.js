@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled, { keyframes, createGlobalStyle } from "styled-components";
-import Navbar from "./Navbar";
-import Login from "./Login";
-import SignUp from "./SignUp";
+import Navbar from "../common/Navbar";
+import Login from "../auth/Login";
+import SignUp from "../auth/SignUp";
 
 const GlobalStyles = createGlobalStyle`
   html {
