@@ -6,7 +6,7 @@ import SignUp from "./components/auth/SignUp";
 import AppRoutes from "./components/routes/Routes";
 
 const App = () => {
-  return <AppRoutes />;
+  return <UserHomePage />;
 };
 
 export default App;

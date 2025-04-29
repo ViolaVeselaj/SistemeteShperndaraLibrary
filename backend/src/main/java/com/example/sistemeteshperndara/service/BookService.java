@@ -9,14 +9,22 @@ import java.util.List;
 
 @Service
 public class BookService {
+
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    private CurrentUser currentUser;
+
     public List<Book> getAllBooks() {
-        return bookRepository.findAll(); //filter(tenant_id=this.user.getTenantId());
+        Long tenantId = currentUser.getTenantIdFromToken();
+        return bookRepository.findByTenantId(tenantId);
     }
 
     public void saveBook(Book book) {
+        Long tenantId = currentUser.getTenantIdFromToken();
+        book.setTenantId(tenantId);
         bookRepository.save(book);
     }
 }
+
