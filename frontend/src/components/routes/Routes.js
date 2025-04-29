@@ -5,7 +5,7 @@ import Login from "../auth/Login";
 import SignUp from "../auth/SignUp";
 import UserHomePage from "../User/userHomePage";
 import PrivateRoute from "./PrivateRoute";
-import AdminPage from "../Admin/AdminPage";
+import AdminPage from "../Admin/AdminDashboard";
 
 const AppRoutes = () => {
   return (
