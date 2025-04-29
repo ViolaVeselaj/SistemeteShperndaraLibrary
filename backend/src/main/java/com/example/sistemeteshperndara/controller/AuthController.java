@@ -52,7 +52,7 @@ public class AuthController {
         response.setToken(token);
         response.setEmail(user.getEmail());
         response.setName(user.getName());
-        response.setRole(user.getRole());
+        response.setRole(user.getRole().name());
 
         return ResponseEntity.ok(response);
     }
