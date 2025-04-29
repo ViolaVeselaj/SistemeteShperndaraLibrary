@@ -6,7 +6,7 @@ import reportWebVitals from './reportWebVitals';
 // import { BrowserRouter } from "react-router-dom/cjs/react-router-dom.min";
 // browserRouter is the same in both v5 and v6
 import { BrowserRouter } from "react-router-dom";
-import { UserProvider } from "./components/UserContext";
+import { UserProvider } from "./components/routes/UserContext";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

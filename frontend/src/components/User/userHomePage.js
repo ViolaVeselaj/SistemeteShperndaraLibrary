@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
-import SearchBar from "../components/SearchBar";
+import Navbar from "../common/Navbar";
+import Footer from "../common/Footer";
+import SearchBar from "../common/SearchBar";
 
 
 const LayoutWrapper = styled.div`

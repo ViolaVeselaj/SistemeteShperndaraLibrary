@@ -3,12 +3,12 @@ import styled from "styled-components";
 import { validation } from "./validation";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { notify } from "./toast";
+import { notify } from "../utils/toast";
 import axios from "axios";
 
 // import { Link } from "react-router-dom/cjs/react-router-dom";
 import { Link } from "react-router-dom";
-import useTitle from "../Hooks/useTitle";
+import useTitle from "../../Hooks/useTitle";
 
 const Container = styled.div`
   min-height: 100vh;

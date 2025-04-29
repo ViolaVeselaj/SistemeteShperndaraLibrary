@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import BookCard from "./BookCard";
-import Navbar from "./Navbar";
+import BookCard from "../BookCard";
+import Navbar from "../common/Navbar";
 
 // LAYOUT
 const Wrapper = styled.div`
