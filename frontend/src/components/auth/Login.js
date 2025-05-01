@@ -428,7 +428,7 @@ const Login = () => {
     
       if (!Object.keys(errors).length) {
         try {
-          const response = await axios.post("http://localhost:8080/auth/login", {
+          const response = await axios.post("http://localhost:8080/users/login", {
             email: data.email,
             password: data.password
           });

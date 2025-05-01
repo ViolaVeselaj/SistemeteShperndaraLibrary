@@ -29,4 +29,14 @@ public class UserService {
         user.setPassword(hashedPassword); // Vendosni fjalëkalimin e hashuar
         userRepository.save(user); // Ruani përdoruesin me fjalëkalimin e hashuar
     }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public boolean checkPassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+
 }
