@@ -64,7 +64,7 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
@@ -75,6 +75,7 @@ public class JwtService {
     public String generateToken(UserDetails userDetails, Long tenantId) {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("tenantId", tenantId);
+        extraClaims.put("authorities", userDetails.getAuthorities().iterator().next().getAuthority());
         return generateToken(extraClaims, userDetails);
     }
 }
