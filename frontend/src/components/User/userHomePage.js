@@ -114,6 +114,7 @@ const HorizontalBookCard = styled(BookCard)`
 
 const UserHomePage = () => {
   const [layout, setLayout] = useState("grid");
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -130,6 +131,13 @@ const UserHomePage = () => {
       })),
     []
   );
+
+  const filteredBooks = useMemo(() => {
+    return mockBooks.filter(book =>
+      book.title.toLowerCase().includes(query.toLowerCase()) ||
+      book.author.toLowerCase().includes(query.toLowerCase())
+    );
+  }, [mockBooks, query]);
 
   const genres = ["Roman", "Frymëzim", "Shkencë", "Fantazi", "Histori"];
 
@@ -150,9 +158,12 @@ const UserHomePage = () => {
 
   return (
     <>
-      <Navbar titles={["Ballina", "Rekomandime", "Biblioteka Ime"]} />
-      
-      <SearchBar books={mockBooks} />
+      <Navbar
+        titles={["Ballina", "Zhanret", "Rekomandime", "Biblioteka Ime"]}
+        books={mockBooks}
+        query={query}
+        setQuery={setQuery}
+      />
 
       <LayoutWrapper>
         <LayoutSelector
@@ -167,7 +178,7 @@ const UserHomePage = () => {
 
         {layout === "grid" && (
           <BookGrid layout="grid">
-            {mockBooks.map((book) => (
+            {filteredBooks.map((book) => (
               <BookCard key={book.id}>
                 <img src={book.image} alt={book.title} />
                 <h3>{book.title}</h3>
@@ -180,7 +191,7 @@ const UserHomePage = () => {
 
         {layout === "single" && (
           <BookGrid layout="single">
-            {mockBooks.map((book) => (
+            {filteredBooks.map((book) => (
               <BookCard key={book.id}>
                 <img src={book.image} alt={book.title} />
                 <div className="info">
@@ -198,7 +209,7 @@ const UserHomePage = () => {
 
         {layout === "carousel" && (
           <CarouselWrapper>
-            {mockBooks.map((book) => (
+            {filteredBooks.map((book) => (
               <CarouselCard key={book.id}>
                 <img src={book.image} alt={book.title} />
                 <h3>{book.title}</h3>
