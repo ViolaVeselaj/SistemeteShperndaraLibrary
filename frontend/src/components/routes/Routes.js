@@ -7,7 +7,7 @@ import UserHomePage from "../User/userHomePage";
 import PrivateRoute from "./PrivateRoute";
 import AdminPage from "../Admin/AdminDashboard";
 import AddBookForm from "../Admin/AddBookForm";
-import BookDetails from "../components/BookDetails";
+import BookDetails from "../common/BookDetails";
 
 const AppRoutes = () => {
   return (
