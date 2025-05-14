@@ -6,6 +6,7 @@ import SignUp from "../auth/SignUp";
 import UserHomePage from "../User/userHomePage";
 import PrivateRoute from "./PrivateRoute";
 import AdminPage from "../Admin/AdminDashboard";
+import AddBookForm from "../Admin/AddBookForm";
 import BookDetails from "../components/BookDetails";
 
 const AppRoutes = () => {
@@ -15,6 +16,14 @@ const AppRoutes = () => {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
+      <Route
+        path="/admin/add-book"
+        element={
+          <PrivateRoute role="ADMIN">
+            <AddBookForm />
+          </PrivateRoute>
+        }
+      />
 
       {/* Protected route for ADMIN */}
       <Route
