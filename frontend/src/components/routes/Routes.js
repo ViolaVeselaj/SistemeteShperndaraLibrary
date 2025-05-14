@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import {BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "../common/HomePage";
 import Login from "../auth/Login";
 import SignUp from "../auth/SignUp";
@@ -66,6 +66,14 @@ const AppRoutes = () => {
           </PrivateRoute>
         }
       />
+<Route
+  path="/books/:id"
+  element={
+    <PrivateRoute role="USER">
+      <BookDetails />
+    </PrivateRoute>
+  }
+/>
 
 
     </Routes>
