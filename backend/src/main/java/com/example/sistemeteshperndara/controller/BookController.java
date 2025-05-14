@@ -36,5 +36,12 @@ public class BookController {
         bookService.saveBook(book);
         return ResponseEntity.ok("Book added successfully.");
     }
+
+    //base controller metodat by default tani mi thirr nkontrollera tjer
+    @GetMapping("/{id}")
+    public ResponseEntity<Book> getBookDetails(@PathVariable Long id) {
+        return ResponseEntity.ok(bookService.getBookById(id));
+    }
+
 }
-//base controller metodat by default tani mi thirr nkontrollera tjer
+

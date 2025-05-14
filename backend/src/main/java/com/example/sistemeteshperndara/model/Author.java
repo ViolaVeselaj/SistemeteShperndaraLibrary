@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Getter
 @Setter
@@ -45,6 +46,7 @@ public class Author {
     private Instant updatedAt;
 
     @OneToMany(mappedBy = "author")
+    @JsonIgnore // mos e dërgo listën e librave në JSON
     private Set<Book> books = new LinkedHashSet<>();
 
 }
