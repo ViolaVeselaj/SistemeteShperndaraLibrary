@@ -7,7 +7,10 @@ import UserHomePage from "../User/userHomePage";
 import PrivateRoute from "./PrivateRoute";
 import AdminPage from "../Admin/AdminDashboard";
 import AddBookForm from "../Admin/AddBookForm";
-import BookDetails from "../components/BookDetails";
+import BookDetails from "../common/BookDetails";
+import AddAuthorForm from "../Admin/AddAuthorForm";
+import RegisterUserForm from "../Admin/RegisterUserForm";
+
 
 const AppRoutes = () => {
   return (
@@ -24,6 +27,25 @@ const AppRoutes = () => {
           </PrivateRoute>
         }
       />
+
+      <Route
+        path="/admin/add-author"
+        element={
+          <PrivateRoute role="ADMIN">
+            <AddAuthorForm />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/admin/register-user"
+        element={
+          <PrivateRoute role="ADMIN">
+            <RegisterUserForm />
+          </PrivateRoute>
+        }
+      />
+
 
       {/* Protected route for ADMIN */}
       <Route

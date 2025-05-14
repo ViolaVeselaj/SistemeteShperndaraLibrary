@@ -9,8 +9,8 @@ const Sidebar = () => {
     <SidebarWrapper>
       <h2>Admin Panel</h2>
       <AdminOption onClick={() => navigate("/admin/add-book")}>Shto Libër</AdminOption>
-      <AdminOption>Regjistro Përdorues</AdminOption>
-      <AdminOption>Shiko Reviews</AdminOption>
+      <AdminOption onClick={() => navigate("/admin/add-author")}>Shto Autor</AdminOption>
+      <AdminOption onClick={() => navigate("/admin/register-user")}>Regjistro Përdorues</AdminOption>
       <AdminOption>Statistika</AdminOption>
       <AdminOption>Kalendar Kthimesh</AdminOption>
       <AdminOption>Fushata Promocionale</AdminOption>
