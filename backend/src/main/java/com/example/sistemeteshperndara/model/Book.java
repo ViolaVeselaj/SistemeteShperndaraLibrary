@@ -40,6 +40,9 @@ public class Book {
     @Column(name = "author")
     private String author1;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "author_id", nullable = false)
