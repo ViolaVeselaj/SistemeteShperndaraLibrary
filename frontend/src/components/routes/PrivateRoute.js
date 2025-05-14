@@ -1,17 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Navigate } from "react-router-dom";
-import { useUser } from "./UserContext";
+import { AuthContext } from "../../context/AuthContext";
 
 const PrivateRoute = ({ children, role }) => {
-  const { user } = useUser();
+  const { user, isLoading } = useContext(AuthContext);
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
+  if (isLoading) return <div>Loading...</div>; // ⏳ pret të lexojë nga localStorage
 
-  if (role && user.role !== role) {
-    return <Navigate to="/" replace />;
-  }
+  if (!user) return <Navigate to="/login" />;
+  if (role && user.role !== role) return <Navigate to="/unauthorized" />;
 
   return children;
 };

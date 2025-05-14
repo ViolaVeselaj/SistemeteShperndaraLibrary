@@ -8,8 +8,9 @@ import axios from "../utils/axiosInstance";
 // import { Link } from "react-router-dom/cjs/react-router-dom"; for v5
 import { Link } from "react-router-dom";
 import useTitle from "../../Hooks/useTitle";
-import { useUser } from "../routes/UserContext";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 
 
@@ -408,8 +409,8 @@ const Login = () => {
    const [touched, setTouched] = useState({});
  
    const navigate = useNavigate();
-   const { setUser } = useUser();
- 
+   const { login } = useContext(AuthContext);
+
    useTitle("Login Form");
  
    useEffect(() => {
@@ -423,31 +424,31 @@ const Login = () => {
      });
    };
  
-  const handleSubmit = async (event) => {
+   const handleSubmit = async (event) => {
     event.preventDefault();
-
+  
     if (!Object.keys(errors).length) {
       try {
-        const response = await axios.post("/users/login", {
+        const response = await axios.post("/auth/login", {
           email: data.email,
           password: data.password
         });
-
-        const userData = response.data;
-        const cleanToken = userData.token.replace("Bearer ", "");
-        localStorage.setItem("token", cleanToken);
-        setUser(userData);
+  
+        const { token, name, email: userEmail, role } = response.data;
+  
+        login({ name, email: userEmail, role }, token); // ✅ përdorim i AuthContext
+  
         notify("Successful Login!", "success");
-
-        if (userData.role === "ADMIN") {
+  
+        if (role === "ADMIN") {
           navigate("/admin");
-        } else if (userData.role === "USER") {
+        } else if (role === "USER") {
           navigate("/userHomePage");
         } else {
           notify("Roli i panjohur!", "error");
           navigate("/");
         }
-
+  
       } catch (error) {
         notify("Invalid Username or Password!", "error");
         console.error("Login error:", error);
@@ -457,6 +458,7 @@ const Login = () => {
       setTouched({ email: true, password: true });
     }
   };
+  
 
     
    const handleChange = (event) => {
