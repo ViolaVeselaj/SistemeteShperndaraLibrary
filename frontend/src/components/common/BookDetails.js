@@ -91,6 +91,37 @@ const ButtonGroup = styled.div`
 `;
 
 const BookDetails = () => {
+  const [borrowDate, setBorrowDate] = useState("");
+const [returnDate, setReturnDate] = useState("");
+const [message, setMessage] = useState(""); // për konfirmim ose error
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const token = localStorage.getItem("token"); // nëse ke autentikim
+    const response = await axios.post(`http://localhost:8080/loans/add`, {
+      book: { id }, // ose bookId: id
+      borrowDate,
+      returnDate,
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    setMessage("Kërkesa u dërgua me sukses!");
+    setShowBorrowForm(false);
+  } catch (error) {
+    console.error("Gabim gjatë huazimit:", error);
+    setMessage("Ndodhi një gabim gjatë huazimit.");
+  }
+}; // per dergimin e kerkeses ne backend
+
+
+
+  const [showBorrowForm, setShowBorrowForm] = useState(false);
+
   const { id } = useParams(); // merr id nga URL
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -126,10 +157,50 @@ const BookDetails = () => {
         </Description>
 
         <ButtonGroup>
-          <button className="borrow">Huazo</button>
+        <button className="borrow" onClick={() => setShowBorrowForm(!showBorrowForm)}>
+  {showBorrowForm ? "Mbyll Formën" : "Huazo"}
+</button>
           <button className="buy">Bli</button>
           <button className="favorite">Shto në Favourite</button>
         </ButtonGroup>
+
+        {showBorrowForm && (
+  <form onSubmit={handleSubmit} style={{ marginTop: "2rem" }}>
+    <div style={{ marginBottom: "1rem" }}>
+      <label>Data e Huazimit:</label><br />
+      <input
+  type="date"
+  name="borrowDate"
+  value={borrowDate}
+  onChange={(e) => setBorrowDate(e.target.value)}
+  style={{ padding: "8px", width: "100%", borderRadius: "5px" }}
+/>
+    </div>
+
+    <div style={{ marginBottom: "1rem" }}>
+      <label>Data e Kthimit:</label><br />
+      <input
+  type="date"
+  name="returnDate"
+  value={returnDate}
+  onChange={(e) => setReturnDate(e.target.value)}
+  style={{ padding: "8px", width: "100%", borderRadius: "5px" }}
+/>
+    </div>
+
+    <button type="submit" style={{
+      padding: "10px 18px",
+      background: "#0099ff",
+      color: "white",
+      border: "none",
+      borderRadius: "8px",
+      cursor: "pointer"
+    }}>
+      Dergo Kërkesën
+    </button>
+  </form>
+)}
+
       </RightSection>
     </Container>
   );
