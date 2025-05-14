@@ -72,22 +72,17 @@ const AddBookForm = () => {
   useEffect(() => {
     axios.get('/authors')
       .then((res) => {
-        console.log("Authors response:", res.data); // për debug
         if (Array.isArray(res.data)) {
           setAuthors(res.data);
         } else {
-          console.error("Invalid authors response:", res.data);
           toast.error("Invalid response from server");
-          setAuthors([]);
         }
       })
       .catch((err) => {
-        console.error("Failed to fetch authors:", err);
         toast.error("Failed to fetch authors");
-        setAuthors([]);
+        console.error(err);
       });
   }, []);
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -95,7 +90,7 @@ const AddBookForm = () => {
   };
 
   const handleAuthorChange = (e) => {
-    setData({ ...data, author: { id: Number(e.target.value) } });
+    setData({ ...data, author: { id: parseInt(e.target.value, 10) } });
   };
 
   const handleSubmit = async (e) => {
@@ -106,12 +101,18 @@ const AddBookForm = () => {
       return;
     }
 
+    const token = localStorage.getItem('token'); // kontrollo që ekziston
+
     try {
       await axios.post('/books', {
         title: data.title,
         publishedYear: Number(data.publishedYear),
         availableCopies: Number(data.availableCopies),
         author: { id: data.author.id }
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       toast.success("Book added successfully!");
@@ -139,8 +140,7 @@ const AddBookForm = () => {
         lastName: ""
       });
 
-      const newAuthorData = response.data;
-      setAuthors([...authors, newAuthorData]);
+      setAuthors([...authors, response.data]);
       setNewAuthor('');
       toast.success("Author created successfully!");
     } catch (err) {

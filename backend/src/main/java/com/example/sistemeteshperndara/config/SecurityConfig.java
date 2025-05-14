@@ -42,7 +42,8 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/users/login", "/users/add", "/error", "/authors", "/authors/create").permitAll()
+                        .requestMatchers("/users/login", "/users/add", "/error", "/authors", "/authors/create", "/books").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/books").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
