@@ -67,14 +67,7 @@ const AppRoutes = () => {
         }
       />
 
-<Route
-  path="/books/:id"
-  element={
-    <PrivateRoute role="USER">
-      <BookDetails />
-    </PrivateRoute>
-  }
-/>
+
     </Routes>
   );
 };
