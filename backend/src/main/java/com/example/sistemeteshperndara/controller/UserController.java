@@ -45,7 +45,7 @@ public class UserController {
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
         );
 
-        String token = jwtService.generateToken(userDetails, user.getTenantId());
+        String token = jwtService.generateToken(userDetails, user.getTenantId(), user.getId());
 
         AuthResponse response = new AuthResponse();
         response.setName(user.getName());

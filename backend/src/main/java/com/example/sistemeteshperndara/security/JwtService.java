@@ -72,10 +72,17 @@ public class JwtService {
                 .getBody();
     }
 
-    public String generateToken(UserDetails userDetails, Long tenantId) {
+    public String generateToken(UserDetails userDetails, Long tenantId, Long userId) {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("tenantId", tenantId);
+        extraClaims.put("userId", userId); // ✅ futet në JWT
         extraClaims.put("authorities", userDetails.getAuthorities().iterator().next().getAuthority());
         return generateToken(extraClaims, userDetails);
     }
+
+    public Long extractUserId(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("userId", Long.class);
+    }
+
 }

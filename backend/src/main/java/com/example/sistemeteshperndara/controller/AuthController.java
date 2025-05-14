@@ -43,10 +43,11 @@ public class AuthController {
             return ResponseEntity.status(401).body("User not found");
         }
 
-        User user = optionalUser.get();
+        User user = optionalUser.get();  // Merr të dhënat e user-it nga DB
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String token = jwtService.generateToken(userDetails, user.getTenantId());
 
+        // ✅ Tani përfshijmë userId në token
+        String token = jwtService.generateToken(userDetails, user.getTenantId(), user.getId());
 
         AuthResponse response = new AuthResponse();
         response.setToken(token);

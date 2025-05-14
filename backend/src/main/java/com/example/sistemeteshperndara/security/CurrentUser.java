@@ -40,6 +40,20 @@ public class CurrentUser {
         return "UNKNOWN";
     }
 
+    public Long getUserIdFromToken() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                .getRequest();
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Missing or invalid Authorization header");
+        }
+
+        String token = authHeader.substring(7);
+        return jwtService.extractUserId(token);
+    }
+
+
     public String getCurrentUsername() {
         return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
