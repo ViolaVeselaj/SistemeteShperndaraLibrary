@@ -4,7 +4,7 @@ import { validation } from "./validation";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { notify } from "../utils/toast";
-import axios from "axios";
+import axios from "../utils/axiosInstance";
 // import { Link } from "react-router-dom/cjs/react-router-dom"; for v5
 import { Link } from "react-router-dom";
 import useTitle from "../../Hooks/useTitle";
@@ -423,44 +423,41 @@ const Login = () => {
      });
    };
  
-   const handleSubmit = async (event) => {
-      event.preventDefault();
-    
-      if (!Object.keys(errors).length) {
-        try {
-          const response = await axios.post("http://localhost:8080/users/login", {
-            email: data.email,
-            password: data.password
-          });
-    
-          const userData = response.data;
-          console.log("User Data:", userData); // 👈 Debug për të parë rolin
-    
-          setUser(userData);
-          notify("Successful Login!", "success");
-    
-          // Navigo sipas rolit
-          if (userData.role === "ADMIN") {
-            navigate("/admin");
-          } else if (userData.role === "USER") {
-            navigate("/userHomePage");
-          } else {
-            notify("Roli i panjohur!", "error");
-            navigate("/"); // fallback në home nëse nuk ka rol të njohur
-          }
-    
-        } catch (error) {
-          notify("Invalid Username or Password!", "error");
-          console.error("Login error:", error);
-        }
-      } else {
-        notify("Please fill all fields correctly!", "error");
-        setTouched({
-          email: true,
-          password: true
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!Object.keys(errors).length) {
+      try {
+        const response = await axios.post("/users/login", {
+          email: data.email,
+          password: data.password
         });
+
+        const userData = response.data;
+        const cleanToken = userData.token.replace("Bearer ", "");
+        localStorage.setItem("token", cleanToken);
+        setUser(userData);
+        notify("Successful Login!", "success");
+
+        if (userData.role === "ADMIN") {
+          navigate("/admin");
+        } else if (userData.role === "USER") {
+          navigate("/userHomePage");
+        } else {
+          notify("Roli i panjohur!", "error");
+          navigate("/");
+        }
+
+      } catch (error) {
+        notify("Invalid Username or Password!", "error");
+        console.error("Login error:", error);
       }
-    };
+    } else {
+      notify("Please fill all fields correctly!", "error");
+      setTouched({ email: true, password: true });
+    }
+  };
+
     
    const handleChange = (event) => {
      setData({
