@@ -28,5 +28,12 @@ public class BookService {
         book.setTenantId(tenantId);
         bookRepository.save(book);
     }
+
+    public Book getBookById(Long id) {
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Libri nuk u gjet me ID: " + id));
+    }
+
+
 }
 

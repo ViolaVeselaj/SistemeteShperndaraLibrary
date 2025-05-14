@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import BookCard from "../BookCard";
+import BookCard from "../common/BookCard";
 import Navbar from "../common/Navbar";
 
 // LAYOUT

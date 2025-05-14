@@ -7,6 +7,7 @@ import UserHomePage from "../User/userHomePage";
 import PrivateRoute from "./PrivateRoute";
 import AdminPage from "../Admin/AdminDashboard";
 import AddBookForm from "../Admin/AddBookForm";
+import BookDetails from "../components/BookDetails";
 
 const AppRoutes = () => {
   return (
@@ -43,6 +44,15 @@ const AppRoutes = () => {
           </PrivateRoute>
         }
       />
+
+<Route
+  path="/books/:id"
+  element={
+    <PrivateRoute role="USER">
+      <BookDetails />
+    </PrivateRoute>
+  }
+/>
     </Routes>
   );
 };
