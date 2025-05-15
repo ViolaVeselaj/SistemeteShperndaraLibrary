@@ -12,6 +12,8 @@ import com.example.sistemeteshperndara.repository.FineRepository;
 import java.math.BigDecimal;
 import com.example.sistemeteshperndara.model.Fine;
 import com.example.sistemeteshperndara.repository.FineRepository;
+import java.time.temporal.ChronoUnit;
+
 
 
 
@@ -38,6 +40,10 @@ public class LoanService {
     public List<Loan> getAllLoans() {
         Long tenantId = currentUser.getTenantIdFromToken();
         return loanRepository.findByTenantId(tenantId);
+    }
+
+    public Loan getLoanById(Long id) {
+        return loanRepository.findById(id).orElseThrow(() -> new RuntimeException("Loan not found"));
     }
 
     public void saveLoan(Loan loan) {

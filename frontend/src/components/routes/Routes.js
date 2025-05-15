@@ -10,15 +10,27 @@ import AddBookForm from "../Admin/AddBookForm";
 import BookDetails from "../common/BookDetails";
 import AddAuthorForm from "../Admin/AddAuthorForm";
 import RegisterUserForm from "../Admin/RegisterUserForm";
+import LoanRequestsPanel from "../Admin/LoanRequestsPanel";
 
 
 const AppRoutes = () => {
   return (
     <Routes>
+
+      <Route
+  path="/admin/requests"
+  element={
+    <PrivateRoute role="ADMIN">
+      <LoanRequestsPanel />
+    </PrivateRoute>
+  }
+/>
+
       {/* Public routes */}
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
+      
       <Route
         path="/admin/add-book"
         element={
