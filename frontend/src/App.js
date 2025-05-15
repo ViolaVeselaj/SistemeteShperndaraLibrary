@@ -8,6 +8,7 @@ import SignUp from "./components/auth/SignUp";
 import AppRoutes from "./components/routes/Routes";
 import { AuthProvider } from "./context/AuthContext";
 import BookDetails from "./components/common/BookDetails";
+import UserHomePage from "./components/User/userHomePage";
 
 function App (){
   return (

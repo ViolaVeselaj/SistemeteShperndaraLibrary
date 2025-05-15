@@ -10,6 +10,7 @@ import AddBookForm from "../Admin/AddBookForm";
 import BookDetails from "../common/BookDetails";
 import AddAuthorForm from "../Admin/AddAuthorForm";
 import RegisterUserForm from "../Admin/RegisterUserForm";
+import UserProfile from "../User/UserProfile";
 
 
 const AppRoutes = () => {
@@ -74,6 +75,17 @@ const AppRoutes = () => {
     </PrivateRoute>
   }
 />
+
+<Route
+  path="/profile"
+  element={
+    <PrivateRoute role="USER">
+      <UserProfile />
+    </PrivateRoute>
+  }
+/>
+
+
 
 
     </Routes>
