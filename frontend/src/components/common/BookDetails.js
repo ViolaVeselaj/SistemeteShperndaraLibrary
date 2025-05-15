@@ -91,7 +91,8 @@ const ButtonGroup = styled.div`
 `;
 
 const BookDetails = () => {
-  const [borrowDate, setBorrowDate] = useState("");
+  
+const [borrowDate, setBorrowDate] = useState("");
 const [returnDate, setReturnDate] = useState("");
 const [message, setMessage] = useState(""); // për konfirmim ose error
 
@@ -101,9 +102,9 @@ const handleSubmit = async (e) => {
   try {
     const token = localStorage.getItem("token"); // nëse ke autentikim
     const response = await axios.post(`http://localhost:8080/loans/add`, {
-      book: { id }, // ose bookId: id
-      borrowDate,
-      returnDate,
+      bookId: parseInt(id),
+      borrowDate: new Date(borrowDate).toISOString(),
+      returnDate: new Date(returnDate).toISOString()
     }, {
       headers: {
         Authorization: `Bearer ${token}`,

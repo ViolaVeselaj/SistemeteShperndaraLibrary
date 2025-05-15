@@ -22,7 +22,10 @@ public class LoanController {
 
     @PostMapping("/add")
     public String requestLoan(@RequestBody LoanRequestDTO request) {
-        loanService.createLoanRequest(request.getBookId());
+        loanService.createLoanRequest(
+                request.getBookId(),
+                request.getBorrowDate(),
+                request.getReturnDate());
         return "Kërkesa për huazim u dërgua me sukses!";
     }
     @GetMapping("/pending")

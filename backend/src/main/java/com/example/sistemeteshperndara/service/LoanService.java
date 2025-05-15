@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -49,7 +48,7 @@ public class LoanService {
         loanRepository.save(loan);
     }
 
-    public void createLoanRequest(Long bookId) {
+    public void createLoanRequest(Long bookId, Instant borrowDate, Instant returnDate) {
         Long tenantId = currentUser.getTenantIdFromToken();
         Long userId = currentUser.getUserIdFromToken();
 
@@ -63,8 +62,8 @@ public class LoanService {
         Loan loan = new Loan();
         loan.setTenantId(tenantId);
         loan.setStatus("PENDING");
-        loan.setBorrowDate(Instant.now());
-        loan.setReturnDate(Instant.now().plus(7, ChronoUnit.DAYS));
+        loan.setBorrowDate(borrowDate);
+        loan.setReturnDate(returnDate);
 
         // përdor EntityManager për referenca të menaxhuara
         User user = entityManager.getReference(User.class, userId);
