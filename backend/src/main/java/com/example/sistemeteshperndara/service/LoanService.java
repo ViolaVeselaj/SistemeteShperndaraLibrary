@@ -58,6 +58,10 @@ public class LoanService {
                 .orElseThrow(() -> new RuntimeException("Loan not found"));
         loan.setStatus(newStatus);
         loanRepository.save(loan);
+
+        if ("RETURNED".equalsIgnoreCase(newStatus)) {
+            checkAndApplyFines();
+        }
     }
 
     public void createLoanRequest(Long bookId) {
