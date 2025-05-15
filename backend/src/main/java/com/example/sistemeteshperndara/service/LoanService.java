@@ -42,6 +42,10 @@ public class LoanService {
         return loanRepository.findByTenantId(tenantId);
     }
 
+    public Loan getLoanById(Long id) {
+        return loanRepository.findById(id).orElseThrow(() -> new RuntimeException("Loan not found"));
+    }
+
     public void saveLoan(Loan loan) {
         Long tenantId = currentUser.getTenantIdFromToken();
         loan.setTenantId(tenantId);
