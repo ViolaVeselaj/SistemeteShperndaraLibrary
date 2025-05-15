@@ -12,9 +12,15 @@ public class BookFavouriteController {
     @Autowired
     private BookFavouriteService bookFavouriteService;
 
-    @PostMapping("/add")
-    public ResponseEntity<String> addToFavourites(@RequestParam Long bookId) {
-        bookFavouriteService.addToFavourites(bookId);
-        return ResponseEntity.ok("Libri u shtua në favourites!");
+    @PostMapping("/toggle")
+    public ResponseEntity<String> toggle(@RequestParam Long bookId) {
+        String result = bookFavouriteService.toggleFavourite(bookId);
+        return ResponseEntity.ok(result); // "ADDED" ose "REMOVED"
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<Boolean> check(@RequestParam Long bookId) {
+        boolean isFav = bookFavouriteService.isFavourite(bookId);
+        return ResponseEntity.ok(isFav);
     }
 }

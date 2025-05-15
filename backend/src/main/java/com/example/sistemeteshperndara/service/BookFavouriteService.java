@@ -1,12 +1,15 @@
 package com.example.sistemeteshperndara.service;
 
-import com.example.sistemeteshperndara.model.*;
+import com.example.sistemeteshperndara.model.Book;
+import com.example.sistemeteshperndara.model.BookFavourite;
+import com.example.sistemeteshperndara.model.User;
 import com.example.sistemeteshperndara.repository.BookFavouriteRepository;
 import com.example.sistemeteshperndara.security.CurrentUser;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 @Service
 public class BookFavouriteService {
 
@@ -19,12 +22,15 @@ public class BookFavouriteService {
     @Autowired
     private EntityManager entityManager;
 
-    public void addToFavourites(Long bookId) {
+    public String toggleFavourite(Long bookId) {
         Long userId = currentUser.getUserIdFromToken();
         Long tenantId = currentUser.getTenantIdFromToken();
 
-        if (bookFavouriteRepository.existsByUserIdAndBookId(userId, bookId)) {
-            throw new RuntimeException("Ky libër është tashmë në favourites.");
+        Optional<BookFavourite> existing = bookFavouriteRepository.findByUserIdAndBookId(userId, bookId);
+
+        if (existing.isPresent()) {
+            bookFavouriteRepository.delete(existing.get());
+            return "REMOVED";
         }
 
         BookFavourite favourite = new BookFavourite();
@@ -33,5 +39,11 @@ public class BookFavouriteService {
         favourite.setTenantId(tenantId);
 
         bookFavouriteRepository.save(favourite);
+        return "ADDED";
+    }
+
+    public boolean isFavourite(Long bookId) {
+        Long userId = currentUser.getUserIdFromToken();
+        return bookFavouriteRepository.findByUserIdAndBookId(userId, bookId).isPresent();
     }
 }

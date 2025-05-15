@@ -89,6 +89,8 @@ const ButtonGroup = styled.div`
     }
   }
 `;
+
+
 const BookDetails = () => {
   const { id } = useParams(); // nga URL
   const [book, setBook] = useState(null);
@@ -135,21 +137,41 @@ const BookDetails = () => {
   };
 
   // HAPI 3: Funksion për favourite
-  const handleAddToFavourite = async () => {
+  const handleToggleFavourite = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.post(`http://localhost:8080/favourites/toggle?bookId=${id}`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = res.data;
+    setIsFavourite(result === "ADDED");
+  } catch (error) {
+    console.error("Gabim gjatë toggle të favourites:", error);
+  }
+};
+
+
+  useEffect(() => {
+  const checkFavourite = async () => {
     try {
       const token = localStorage.getItem("token");
-      await axios.post(`http://localhost:8080/favourites/add?bookId=${book.id}`, {}, {
+      const res = await axios.get(`http://localhost:8080/favourites/check?bookId=${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       });
-      alert("Libri u shtua në favourites!");
-      setIsFavourite(true);
+      setIsFavourite(res.data); // boolean: true/false
     } catch (error) {
-      console.error("Gabim gjatë shtimit në favourites:", error);
-      alert("Ky libër mund të jetë tashmë në favourites.");
+      console.error("Gabim gjatë kontrollit të favourites:", error);
     }
   };
+
+  checkFavourite();
+}, [id]);
+
 
   if (loading) return <p style={{ color: "white", padding: "2rem" }}>Duke u ngarkuar...</p>;
   if (!book) return <p style={{ color: "white", padding: "2rem" }}>Libri nuk u gjet.</p>;
@@ -175,12 +197,12 @@ const BookDetails = () => {
           </button>
           <button className="buy">Bli</button>
           <button
-            className="favorite"
-            onClick={handleAddToFavourite}
-            disabled={isFavourite}
-          >
-            {isFavourite ? "Në Favourites ✅" : "Shto në Favourite"}
-          </button>
+  className="favorite"
+  onClick={handleToggleFavourite}
+>
+  {isFavourite ? "Hiq nga Favourite ❌" : "Shto në Favourite ❤️"}
+</button>
+
         </ButtonGroup>
 
         {showBorrowForm && (
