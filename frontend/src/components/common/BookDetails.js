@@ -89,44 +89,17 @@ const ButtonGroup = styled.div`
     }
   }
 `;
-
 const BookDetails = () => {
-  
-const [borrowDate, setBorrowDate] = useState("");
-const [returnDate, setReturnDate] = useState("");
-const [message, setMessage] = useState(""); // për konfirmim ose error
-
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  try {
-    const token = localStorage.getItem("token"); // nëse ke autentikim
-    const response = await axios.post(`http://localhost:8080/loans/add`, {
-      bookId: parseInt(id),
-      borrowDate: new Date(borrowDate).toISOString(),
-      returnDate: new Date(returnDate).toISOString()
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    setMessage("Kërkesa u dërgua me sukses!");
-    setShowBorrowForm(false);
-  } catch (error) {
-    console.error("Gabim gjatë huazimit:", error);
-    setMessage("Ndodhi një gabim gjatë huazimit.");
-  }
-}; // per dergimin e kerkeses ne backend
-
-
-
-  const [showBorrowForm, setShowBorrowForm] = useState(false);
-
-  const { id } = useParams(); // merr id nga URL
+  const { id } = useParams(); // nga URL
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showBorrowForm, setShowBorrowForm] = useState(false);
+  const [borrowDate, setBorrowDate] = useState("");
+  const [returnDate, setReturnDate] = useState("");
+  const [message, setMessage] = useState("");
+  const [isFavourite, setIsFavourite] = useState(false);
 
+  // HAPI 1: Merr të dhënat e librit
   useEffect(() => {
     axios.get(`http://localhost:8080/books/${id}`)
       .then((res) => {
@@ -138,6 +111,45 @@ const handleSubmit = async (e) => {
         setLoading(false);
       });
   }, [id]);
+
+  // HAPI 2: Funksion për huazim
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(`http://localhost:8080/loans/add`, {
+        bookId: parseInt(id),
+        borrowDate: new Date(borrowDate).toISOString(),
+        returnDate: new Date(returnDate).toISOString()
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setMessage("Kërkesa u dërgua me sukses!");
+      setShowBorrowForm(false);
+    } catch (error) {
+      console.error("Gabim gjatë huazimit:", error);
+      setMessage("Ndodhi një gabim gjatë huazimit.");
+    }
+  };
+
+  // HAPI 3: Funksion për favourite
+  const handleAddToFavourite = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(`http://localhost:8080/favourites/add?bookId=${book.id}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      alert("Libri u shtua në favourites!");
+      setIsFavourite(true);
+    } catch (error) {
+      console.error("Gabim gjatë shtimit në favourites:", error);
+      alert("Ky libër mund të jetë tashmë në favourites.");
+    }
+  };
 
   if (loading) return <p style={{ color: "white", padding: "2rem" }}>Duke u ngarkuar...</p>;
   if (!book) return <p style={{ color: "white", padding: "2rem" }}>Libri nuk u gjet.</p>;
@@ -158,50 +170,55 @@ const handleSubmit = async (e) => {
         </Description>
 
         <ButtonGroup>
-        <button className="borrow" onClick={() => setShowBorrowForm(!showBorrowForm)}>
-  {showBorrowForm ? "Mbyll Formën" : "Huazo"}
-</button>
+          <button className="borrow" onClick={() => setShowBorrowForm(!showBorrowForm)}>
+            {showBorrowForm ? "Mbyll Formën" : "Huazo"}
+          </button>
           <button className="buy">Bli</button>
-          <button className="favorite">Shto në Favourite</button>
+          <button
+            className="favorite"
+            onClick={handleAddToFavourite}
+            disabled={isFavourite}
+          >
+            {isFavourite ? "Në Favourites ✅" : "Shto në Favourite"}
+          </button>
         </ButtonGroup>
 
         {showBorrowForm && (
-  <form onSubmit={handleSubmit} style={{ marginTop: "2rem" }}>
-    <div style={{ marginBottom: "1rem" }}>
-      <label>Data e Huazimit:</label><br />
-      <input
-  type="date"
-  name="borrowDate"
-  value={borrowDate}
-  onChange={(e) => setBorrowDate(e.target.value)}
-  style={{ padding: "8px", width: "100%", borderRadius: "5px" }}
-/>
-    </div>
+          <form onSubmit={handleSubmit} style={{ marginTop: "2rem" }}>
+            <div style={{ marginBottom: "1rem" }}>
+              <label>Data e Huazimit:</label><br />
+              <input
+                type="date"
+                name="borrowDate"
+                value={borrowDate}
+                onChange={(e) => setBorrowDate(e.target.value)}
+                style={{ padding: "8px", width: "100%", borderRadius: "5px" }}
+              />
+            </div>
 
-    <div style={{ marginBottom: "1rem" }}>
-      <label>Data e Kthimit:</label><br />
-      <input
-  type="date"
-  name="returnDate"
-  value={returnDate}
-  onChange={(e) => setReturnDate(e.target.value)}
-  style={{ padding: "8px", width: "100%", borderRadius: "5px" }}
-/>
-    </div>
+            <div style={{ marginBottom: "1rem" }}>
+              <label>Data e Kthimit:</label><br />
+              <input
+                type="date"
+                name="returnDate"
+                value={returnDate}
+                onChange={(e) => setReturnDate(e.target.value)}
+                style={{ padding: "8px", width: "100%", borderRadius: "5px" }}
+              />
+            </div>
 
-    <button type="submit" style={{
-      padding: "10px 18px",
-      background: "#0099ff",
-      color: "white",
-      border: "none",
-      borderRadius: "8px",
-      cursor: "pointer"
-    }}>
-      Dergo Kërkesën
-    </button>
-  </form>
-)}
-
+            <button type="submit" style={{
+              padding: "10px 18px",
+              background: "#0099ff",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer"
+            }}>
+              Dergo Kërkesën
+            </button>
+          </form>
+        )}
       </RightSection>
     </Container>
   );
