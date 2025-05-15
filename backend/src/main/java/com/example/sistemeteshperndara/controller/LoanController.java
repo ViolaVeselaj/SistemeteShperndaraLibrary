@@ -5,6 +5,8 @@ import com.example.sistemeteshperndara.service.LoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.example.sistemeteshperndara.dto.LoanRequestDTO;
+import org.springframework.http.ResponseEntity;
+import com.example.sistemeteshperndara.repository.FineRepository;
 
 import java.util.List;
 
@@ -41,5 +43,12 @@ public class LoanController {
         loanService.updateStatus(id, "REJECTED");
         return "Loan rejected";
     }
+
+    @PutMapping("/check-fines")
+    public ResponseEntity<String> checkFines() {
+        loanService.checkAndApplyFines();
+        return ResponseEntity.ok("Fines checked and applied where necessary.");
+    }
+
 
 }

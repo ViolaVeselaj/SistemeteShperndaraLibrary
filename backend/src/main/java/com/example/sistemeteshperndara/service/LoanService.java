@@ -8,6 +8,13 @@ import com.example.sistemeteshperndara.security.CurrentUser;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.example.sistemeteshperndara.repository.FineRepository;
+import java.math.BigDecimal;
+import com.example.sistemeteshperndara.model.Fine;
+import com.example.sistemeteshperndara.repository.FineRepository;
+
+
+
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -24,6 +31,10 @@ public class LoanService {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private FineRepository fineRepository;
+
 
     public List<Loan> getAllLoans() {
         Long tenantId = currentUser.getTenantIdFromToken();
@@ -75,4 +86,35 @@ public class LoanService {
 
         loanRepository.save(loan);
     }
+
+    public void checkAndApplyFines() {
+        Long tenantId = currentUser.getTenantIdFromToken();
+        List<Loan> loans = loanRepository.findByTenantId(tenantId);
+
+        for (Loan loan : loans) {
+            if (loan.getReturnDate() != null && Instant.now().isAfter(loan.getReturnDate())) {
+                // Kontrollo nëse ka gjobë ekzistuese për këtë huazim
+                boolean alreadyFined = fineRepository
+                        .findAll()
+                        .stream()
+                        .anyMatch(f -> f.getLoan().getId().equals(loan.getId()));
+
+                if (!alreadyFined) {
+                    long overdueDays = ChronoUnit.DAYS.between(loan.getReturnDate(), Instant.now());
+                    BigDecimal amount = BigDecimal.valueOf(overdueDays * 0.50); // 0.50€/ditë
+
+                    Fine fine = new Fine();
+                    fine.setTenantId(tenantId);
+                    fine.setLoan(loan);
+                    fine.setUser(loan.getUser());
+                    fine.setAmount(amount);
+                    fine.setIssuedDate(Instant.now());
+                    fine.setPaid(false);
+
+                    fineRepository.save(fine);
+                }
+            }
+        }
+    }
+
 }
