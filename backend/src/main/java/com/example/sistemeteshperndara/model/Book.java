@@ -49,4 +49,9 @@ public class Book {
     @JsonBackReference
     private Author author;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shelf_id")
+    private Shelf shelf;
+
+
 }
