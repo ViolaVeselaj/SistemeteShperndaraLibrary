@@ -19,7 +19,6 @@ public class AuthorController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createAuthor(@RequestBody Author author) {
-
         if (authorService.existsByName(author.getFirstName(), author.getLastName())) {
             return ResponseEntity.badRequest().body("Author already exists.");
         }
@@ -27,6 +26,7 @@ public class AuthorController {
         authorService.save(author);
         return ResponseEntity.ok("Author created successfully.");
     }
+
 
     @GetMapping
     public ResponseEntity<?> getAllAuthors() {

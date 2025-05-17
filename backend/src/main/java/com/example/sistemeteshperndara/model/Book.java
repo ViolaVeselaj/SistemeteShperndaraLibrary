@@ -37,8 +37,8 @@ public class Book {
     @Column(name = "tenant_id", nullable = false)
     private Long tenantId;
 
-    @Column(name = "author")
-    private String author1;
+    @Column(name = "image_url")
+    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

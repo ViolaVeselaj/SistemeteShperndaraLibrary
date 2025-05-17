@@ -3,11 +3,14 @@ package com.example.sistemeteshperndara.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-import com.example.sistemeteshperndara.model.User;
+import com.example.sistemeteshperndara.model.Role;
+
 
 
 
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -33,14 +36,17 @@ public class User {
     @Column(name = "created_at")
     private Instant createdAt;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private Role role;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new LinkedHashSet<>();
+
+
 
     @Column(name = "tenant_id", nullable = false)
     private Long tenantId;
 
-    public enum Role {
-        ADMIN, LIBRARIAN, USER
-    }
 }

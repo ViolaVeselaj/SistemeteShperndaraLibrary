@@ -2,6 +2,7 @@ package com.example.sistemeteshperndara.controller;
 
 import com.example.sistemeteshperndara.dto.AuthRequest;
 import com.example.sistemeteshperndara.dto.AuthResponse;
+import com.example.sistemeteshperndara.model.Role;
 import com.example.sistemeteshperndara.model.User;
 import com.example.sistemeteshperndara.repository.UserRepository;
 import com.example.sistemeteshperndara.security.JwtService;
@@ -48,11 +49,16 @@ public class AuthController {
         String token = jwtService.generateToken(userDetails, user.getTenantId());
 
 
+        String roleName = user.getRoles().stream()
+                .findFirst()
+                .map(Role::getName)
+                .orElse("UNKNOWN");
+
         AuthResponse response = new AuthResponse();
-        response.setToken(token);
+        response.setToken("Bearer " + token);
         response.setEmail(user.getEmail());
         response.setName(user.getName());
-        response.setRole(user.getRole().name());
+        response.setRole(roleName);
 
         return ResponseEntity.ok(response);
     }

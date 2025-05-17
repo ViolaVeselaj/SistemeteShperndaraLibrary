@@ -9,8 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -26,15 +25,15 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
+        var authorities = user.getRoles().stream()
+                .flatMap(role -> role.getPermissions().stream())
+                .map(p -> new SimpleGrantedAuthority(p.getHttpMethod() + ":" + p.getUrlPattern()))
+                .collect(Collectors.toList());
+
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                getAuthorities(user.getRole().name())
-
+                authorities
         );
-    }
-
-    private Collection<? extends GrantedAuthority> getAuthorities(String role) {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
     }
 }
