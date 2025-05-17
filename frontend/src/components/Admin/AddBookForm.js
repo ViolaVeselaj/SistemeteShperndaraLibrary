@@ -63,6 +63,7 @@ const AddBookForm = () => {
     title: '',
     publishedYear: '',
     availableCopies: '',
+    imageUrl: '',   
     author: { id: '' }
   });
 
@@ -108,6 +109,7 @@ const AddBookForm = () => {
         title: data.title,
         publishedYear: Number(data.publishedYear),
         availableCopies: Number(data.availableCopies),
+        imageUrl: data.imageUrl, 
         author: { id: data.author.id }
       }, {
         headers: {
@@ -120,6 +122,7 @@ const AddBookForm = () => {
         title: '',
         publishedYear: '',
         availableCopies: '',
+        imageUrl: '', 
         author: { id: '' }
       });
     } catch (err) {
@@ -204,6 +207,16 @@ const AddBookForm = () => {
               onChange={(e) => setNewAuthor(e.target.value)}
             />
             <Button type="button" onClick={handleCreateAuthor}>Create Author</Button>
+          </InputContainer>
+
+          <InputContainer>
+            <input
+              type="text"
+              name="imageUrl"
+              placeholder="Image URL"
+              value={data.imageUrl}
+              onChange={handleChange}
+            />
           </InputContainer>
 
           <Button type="submit">Add Book</Button>

@@ -6,6 +6,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.stereotype.Component;
+
 
 @Component
 public class CurrentUser {
@@ -39,6 +41,20 @@ public class CurrentUser {
         // Fallback
         return "UNKNOWN";
     }
+
+    public Long getUserIdFromToken() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                .getRequest();
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Missing or invalid Authorization header");
+        }
+
+        String token = authHeader.substring(7);
+        return jwtService.extractUserId(token);
+    }
+
 
     public String getCurrentUsername() {
         return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

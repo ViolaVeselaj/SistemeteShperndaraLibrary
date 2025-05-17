@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import axios from '../utils/axiosInstance';
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -90,11 +90,18 @@ const ButtonGroup = styled.div`
   }
 `;
 
+
 const BookDetails = () => {
-  const { id } = useParams(); // merr id nga URL
+  const { id } = useParams(); // nga URL
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showBorrowForm, setShowBorrowForm] = useState(false);
+  const [borrowDate, setBorrowDate] = useState("");
+  const [returnDate, setReturnDate] = useState("");
+  const [message, setMessage] = useState("");
+  const [isFavourite, setIsFavourite] = useState(false);
 
+  // HAPI 1: Merr të dhënat e librit
   useEffect(() => {
     axios.get(`http://localhost:8080/books/${id}`)
       .then((res) => {
@@ -106,6 +113,65 @@ const BookDetails = () => {
         setLoading(false);
       });
   }, [id]);
+
+  // HAPI 2: Funksion për huazim
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(`http://localhost:8080/loans/add`, {
+        bookId: parseInt(id),
+        borrowDate: new Date(borrowDate).toISOString(),
+        returnDate: new Date(returnDate).toISOString()
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setMessage("Kërkesa u dërgua me sukses!");
+      setShowBorrowForm(false);
+    } catch (error) {
+      console.error("Gabim gjatë huazimit:", error);
+      setMessage("Ndodhi një gabim gjatë huazimit.");
+    }
+  };
+
+  // HAPI 3: Funksion për favourite
+  const handleToggleFavourite = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.post(`http://localhost:8080/favourites/toggle?bookId=${id}`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = res.data;
+    setIsFavourite(result === "ADDED");
+  } catch (error) {
+    console.error("Gabim gjatë toggle të favourites:", error);
+  }
+};
+
+
+  useEffect(() => {
+  const checkFavourite = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`http://localhost:8080/favourites/check?bookId=${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setIsFavourite(res.data); // boolean: true/false
+    } catch (error) {
+      console.error("Gabim gjatë kontrollit të favourites:", error);
+    }
+  };
+
+  checkFavourite();
+}, [id]);
+
 
   if (loading) return <p style={{ color: "white", padding: "2rem" }}>Duke u ngarkuar...</p>;
   if (!book) return <p style={{ color: "white", padding: "2rem" }}>Libri nuk u gjet.</p>;
@@ -126,10 +192,55 @@ const BookDetails = () => {
         </Description>
 
         <ButtonGroup>
-          <button className="borrow">Huazo</button>
+          <button className="borrow" onClick={() => setShowBorrowForm(!showBorrowForm)}>
+            {showBorrowForm ? "Mbyll Formën" : "Huazo"}
+          </button>
           <button className="buy">Bli</button>
-          <button className="favorite">Shto në Favourite</button>
+          <button
+  className="favorite"
+  onClick={handleToggleFavourite}
+>
+  {isFavourite ? "Hiq nga Favourite ❌" : "Shto në Favourite ❤️"}
+</button>
+
         </ButtonGroup>
+
+        {showBorrowForm && (
+          <form onSubmit={handleSubmit} style={{ marginTop: "2rem" }}>
+            <div style={{ marginBottom: "1rem" }}>
+              <label>Data e Huazimit:</label><br />
+              <input
+                type="date"
+                name="borrowDate"
+                value={borrowDate}
+                onChange={(e) => setBorrowDate(e.target.value)}
+                style={{ padding: "8px", width: "100%", borderRadius: "5px" }}
+              />
+            </div>
+
+            <div style={{ marginBottom: "1rem" }}>
+              <label>Data e Kthimit:</label><br />
+              <input
+                type="date"
+                name="returnDate"
+                value={returnDate}
+                onChange={(e) => setReturnDate(e.target.value)}
+                style={{ padding: "8px", width: "100%", borderRadius: "5px" }}
+              />
+            </div>
+
+            <button type="submit" style={{
+              padding: "10px 18px",
+              background: "#0099ff",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer"
+            }}>
+              Dergo Kërkesën
+            </button>
+          </form>
+        )}
       </RightSection>
     </Container>
   );

@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
+import axios from '../utils/axiosInstance';
 import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
-import SearchBar from "../common/SearchBar";
+import { useNavigate } from "react-router-dom";
+
 
 
 const LayoutWrapper = styled.div`
@@ -27,11 +29,9 @@ const BookGrid = styled.div`
   flex-direction: column;
   gap: 2rem;
   margin-top: 2rem;
-
   grid-template-columns: ${({ layout }) =>
     layout === "grid" ? "repeat(5, 1fr)" : "1fr"};
 `;
-
 
 const BookCard = styled.div`
   background: #fff;
@@ -59,7 +59,6 @@ const BookCard = styled.div`
     color: #555;
   }
 `;
-
 
 const CarouselWrapper = styled.div`
   display: flex;
@@ -112,64 +111,64 @@ const HorizontalBookCard = styled(BookCard)`
   flex: 0 0 200px;
 `;
 
-const UserHomePage = () => {
+
+
+function UserHomePage() {
+
+  const navigate = useNavigate();
+  const handleBookClick = (bookId) => {
+    navigate(`/books/${bookId}`);
+  };
+  
   const [layout, setLayout] = useState("grid");
   const [query, setQuery] = useState("");
+  const [books, setBooks] = useState([]);
 
   useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/books");
+        setBooks(response.data);
+      } catch (error) {
+        console.error("Gabim gjatë marrjes së librave:", error);
+      }
+    };
+
+    fetchBooks();
     window.scrollTo(0, 0);
   }, []);
 
-  const mockBooks = useMemo(
-    () =>
-      Array.from({ length: 15 }, (_, i) => ({
-        id: i,
-        title: `Libri ${i + 1}`,
-        author: `Autori ${i + 1}`,
-        image:
-          "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60",
-      })),
-    []
-  );
-
   const filteredBooks = useMemo(() => {
-    return mockBooks.filter(book =>
-      book.title.toLowerCase().includes(query.toLowerCase()) ||
-      book.author.toLowerCase().includes(query.toLowerCase())
+    return books.filter((book) => book.title.toLowerCase().includes(query.toLowerCase()) ||
+      (book.author1 && book.author1.toLowerCase().includes(query.toLowerCase()))
     );
-  }, [mockBooks, query]);
+  }, [books, query]);
 
   const genres = ["Roman", "Frymëzim", "Shkencë", "Fantazi", "Histori"];
 
   const genreBooks = useMemo(() => {
     if (layout !== "horizontal") return [];
-    return genres.map((genre, index) =>
-      Array.from({ length: 10 }, (_, i) => ({
+    return genres.map((genre, index) => books
+      .filter((book) => book.title.toLowerCase().includes(genre.toLowerCase())
+      )
+      .slice(0, 10)
+      .map((book, i) => ({
+        ...book,
         id: `${index}-${i}`,
-        title: `${genre} - Libri ${i + 1}`,
-        author: `Autori ${i + 1}`,
-        genre,
-        image:
-          "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60",
       }))
     );
-  }, [layout]);
-
+  }, [layout, books]);
 
   return (
     <>
       <Navbar
         titles={["Ballina", "Zhanret", "Rekomandime", "Biblioteka Ime"]}
-        books={mockBooks}
+        books={books}
         query={query}
-        setQuery={setQuery}
-      />
+        setQuery={setQuery} />
 
       <LayoutWrapper>
-        <LayoutSelector
-          value={layout}
-          onChange={(e) => setLayout(e.target.value)}
-        >
+        <LayoutSelector value={layout} onChange={(e) => setLayout(e.target.value)}>
           <option value="grid">Grid Layout</option>
           <option value="single">Single Column</option>
           <option value="carousel">Carousel</option>
@@ -179,26 +178,27 @@ const UserHomePage = () => {
         {layout === "grid" && (
           <BookGrid layout="grid">
             {filteredBooks.map((book) => (
-              <BookCard key={book.id}>
-                <img src={book.image} alt={book.title} />
+              <BookCard key={book.id} onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>
+                <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60" alt={book.title} />
                 <h3>{book.title}</h3>
-                <p>{book.author}</p>
+                <p>{book.author1}</p>
               </BookCard>
             ))}
           </BookGrid>
         )}
 
-
         {layout === "single" && (
           <BookGrid layout="single">
             {filteredBooks.map((book) => (
-              <BookCard key={book.id}>
-                <img src={book.image} alt={book.title} />
+              <BookCard key={book.id} onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>
+                <img
+                  src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
+                  alt={book.title} />
                 <div className="info">
                   <h3>{book.title}</h3>
-                  <p className="author">{book.author}</p>
+                  <p className="author">{book.author1}</p>
                   <p className="description">
-                    Ky është një përshkrim i librit që do të vijë nga databaza. Ai mund të përmbajë përmbajtje, mesazhe ose informacione për autorin.
+                    Përshkrimi do të vijë nga databaza në versionin e ardhshëm.
                   </p>
                 </div>
               </BookCard>
@@ -206,14 +206,15 @@ const UserHomePage = () => {
           </BookGrid>
         )}
 
-
         {layout === "carousel" && (
           <CarouselWrapper>
             {filteredBooks.map((book) => (
-              <CarouselCard key={book.id}>
-                <img src={book.image} alt={book.title} />
+              <CarouselCard key={book.id} onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>
+               <img
+                  src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
+                  alt={book.title} />
                 <h3>{book.title}</h3>
-                <p>{book.author}</p>
+                <p>{book.author1}</p>
               </CarouselCard>
             ))}
           </CarouselWrapper>
@@ -227,9 +228,11 @@ const UserHomePage = () => {
                 <HorizontalScrollContainer>
                   {books.map((book) => (
                     <HorizontalBookCard key={book.id}>
-                      <img src={book.image} alt={book.title} />
+                      <img
+                        src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
+                        alt={book.title} />
                       <h3>{book.title}</h3>
-                      <p>{book.author}</p>
+                      <p>{book.author1}</p>
                     </HorizontalBookCard>
                   ))}
                 </HorizontalScrollContainer>
@@ -238,9 +241,11 @@ const UserHomePage = () => {
           </>
         )}
       </LayoutWrapper>
+
       <Footer />
     </>
   );
-};
+}
 
 export default UserHomePage;
+

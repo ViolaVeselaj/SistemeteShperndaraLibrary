@@ -56,7 +56,7 @@ public class UserController {
                 authorities
         );
 
-        String token = jwtService.generateToken(userDetails, user.getTenantId());
+        String token = jwtService.generateToken(userDetails, user.getTenantId(), user.getId());
 
         AuthResponse response = new AuthResponse();
         response.setName(user.getName());

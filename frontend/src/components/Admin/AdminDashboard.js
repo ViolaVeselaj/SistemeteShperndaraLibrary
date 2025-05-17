@@ -10,6 +10,8 @@ import Promotions from "./Promotions";
 import SuspiciousUsers from "./SuspiciousUsers";
 import UsersPanel from "./UsersPanel";
 import Notifications from "./Notifications";
+import LoanRequestsPanel from "./LoanRequestsPanel";
+
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([
@@ -79,6 +81,7 @@ const AdminDashboard = () => {
           <Promotions list={promotions} />
           <SuspiciousUsers users={suspiciousUsers} />
           <UsersPanel users={users} onBlock={handleBlock} onDelete={handleDelete} />
+          <LoanRequestsPanel />
           <Notifications />
         </Main>
       </Wrapper>

@@ -1,40 +1,37 @@
 package com.example.sistemeteshperndara.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.Instant;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 @Entity
 @Table(name = "loan")
 public class Loan {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "book_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Book book;
 
     @Column(name = "borrow_date")
@@ -43,13 +40,12 @@ public class Loan {
     @Column(name = "return_date")
     private Instant returnDate;
 
+    @Column(name = "status", length = 20)
     @ColumnDefault("'BORROWED'")
-    @Lob
-    @Column(name = "status")
     private String status;
 
-    @ColumnDefault("1")
-    @Column(name = "tenant_id", nullable = false)
-    private Long tenantId;
 
+    @Column(name = "tenant_id", nullable = false)
+    @ColumnDefault("1")
+    private Long tenantId;
 }
