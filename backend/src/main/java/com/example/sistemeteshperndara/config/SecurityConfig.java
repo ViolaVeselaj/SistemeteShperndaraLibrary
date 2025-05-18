@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/favicon.ico", "/error").permitAll()
                         .requestMatchers("/users/login", "/users/add", "/error", "/authors", "/authors/create", "/books").permitAll()
                         ///.requestMatchers("/auth/login", "/users/add", "/error", "/authors", "/authors/create", "/books").permitAll()
                         .requestMatchers(HttpMethod.POST, "/books").permitAll()
@@ -74,4 +75,5 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 }

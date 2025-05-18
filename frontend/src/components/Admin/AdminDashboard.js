@@ -11,6 +11,12 @@ import SuspiciousUsers from "./SuspiciousUsers";
 import UsersPanel from "./UsersPanel";
 import Notifications from "./Notifications";
 import LoanRequestsPanel from "./LoanRequestsPanel";
+import EventList from "./EventList"; // ose rruga relative që ke ti
+
+
+
+
+
 
 
 const AdminDashboard = () => {
@@ -79,6 +85,7 @@ const AdminDashboard = () => {
           <StatsSection />
           <ReturnCalendar data={returnCalendar} />
           <Promotions list={promotions} />
+          <EventList />
           <SuspiciousUsers users={suspiciousUsers} />
           <UsersPanel users={users} onBlock={handleBlock} onDelete={handleDelete} />
           <LoanRequestsPanel />
