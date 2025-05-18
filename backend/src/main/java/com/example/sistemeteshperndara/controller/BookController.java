@@ -2,10 +2,12 @@ package com.example.sistemeteshperndara.controller;
 
 import com.example.sistemeteshperndara.model.Author;
 import com.example.sistemeteshperndara.model.Book;
+import com.example.sistemeteshperndara.security.CurrentUser;
 import com.example.sistemeteshperndara.service.AuthorService;
 import com.example.sistemeteshperndara.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,16 +23,18 @@ public class BookController {
     @Autowired
     private AuthorService authorService;
 
+    @Autowired
+    private CurrentUser currentUser;
+
+    @PreAuthorize("hasAuthority('GET:/books')")
     @GetMapping
     public List<Book> getAllBooks() {
         return bookService.getAllBooks();
     }
 
+    @PreAuthorize("hasAuthority('POST:/books')")
     @PostMapping
     public ResponseEntity<?> addBook(@RequestBody Book book) {
-        // Kontrolli i autorizimit bëhet në SecurityConfig përmes PermissionRepository
-        // Kjo metodë ekzekutohet vetëm nëse user-i ka POST:/books në authorities
-
         if (book.getAuthor() == null || book.getAuthor().getId() == null) {
             return ResponseEntity.badRequest().body("Author ID is required.");
         }
@@ -41,12 +45,13 @@ public class BookController {
         }
 
         book.setAuthor(authorOptional.get());
-        book.setTenantId(1L); // ose përdor CurrentUser nëse ruan tenantId në JWT
+        book.setTenantId(currentUser.getTenantIdFromToken());
 
         bookService.saveBook(book);
         return ResponseEntity.ok("Book added successfully.");
     }
 
+    @PreAuthorize("hasAuthority('GET:/books/{id}')") // ose GET:/books/* sipas konfigurimit
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookDetails(@PathVariable Long id) {
         return ResponseEntity.ok(bookService.getBookById(id));
