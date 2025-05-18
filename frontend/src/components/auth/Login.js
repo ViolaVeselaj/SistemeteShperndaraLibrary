@@ -424,40 +424,42 @@ const Login = () => {
      });
    };
  
-   const handleSubmit = async (event) => {
-    event.preventDefault();
-  
-    if (!Object.keys(errors).length) {
-      try {
-        const response = await axios.post("/auth/login", {
-          email: data.email,
-          password: data.password
-        });
-  
-        const { token, name, email: userEmail, role } = response.data;
-  
-        login({ name, email: userEmail, role }, token); // ✅ përdorim i AuthContext
-  
-        notify("Successful Login!", "success");
-  
-        if (role === "ADMIN") {
-          navigate("/admin");
-        } else if (role === "USER") {
-          navigate("/userHomePage");
-        } else {
-          notify("Roli i panjohur!", "error");
-          navigate("/");
+    const handleSubmit = async (event) => {
+      event.preventDefault();
+    
+      if (!Object.keys(errors).length) {
+        try {
+          const response = await axios.post("http://localhost:8080/auth/login", {
+            email: data.email,
+            password: data.password
+          });
+
+          console.log("LOGIN RESPONSE: ", response.data);
+    
+          const { token, name, email: userEmail, role } = response.data;
+    
+          login({ name, email: userEmail, role }, token); // ✅ përdorim i AuthContext
+    
+          notify("Successful Login!", "success");
+    
+          if (role === "ADMIN") {
+            navigate("/admin");
+          } else if (role === "USER") {
+            navigate("/userHomePage");
+          } else {
+            notify("Roli i panjohur!", "error");
+            navigate("/");
+          }
+    
+        } catch (error) {
+          notify("Invalid Username or Password!", "error");
+          console.error("Login error:", error);
         }
-  
-      } catch (error) {
-        notify("Invalid Username or Password!", "error");
-        console.error("Login error:", error);
+      } else {
+        notify("Please fill all fields correctly!", "error");
+        setTouched({ email: true, password: true });
       }
-    } else {
-      notify("Please fill all fields correctly!", "error");
-      setTouched({ email: true, password: true });
-    }
-  };
+    };
   
 
     

@@ -2,7 +2,9 @@ package com.example.sistemeteshperndara.controller;
 
 import com.example.sistemeteshperndara.dto.AuthRequest;
 import com.example.sistemeteshperndara.dto.AuthResponse;
+import com.example.sistemeteshperndara.model.Role;
 import com.example.sistemeteshperndara.model.User;
+import com.example.sistemeteshperndara.repository.RoleRepository;
 import com.example.sistemeteshperndara.security.JwtService;
 import com.example.sistemeteshperndara.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -24,6 +27,9 @@ public class UserController {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @GetMapping
     public List<User> getAllUsers() {
@@ -39,10 +45,15 @@ public class UserController {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
 
+        List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
+                .flatMap(role -> role.getPermissions().stream())
+                .map(p -> new SimpleGrantedAuthority(p.getHttpMethod() + ":" + p.getUrlPattern()))
+                .toList();
+
         UserDetails userDetails = new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+                authorities
         );
 
         String token = jwtService.generateToken(userDetails, user.getTenantId(), user.getId());
@@ -50,7 +61,11 @@ public class UserController {
         AuthResponse response = new AuthResponse();
         response.setName(user.getName());
         response.setEmail(user.getEmail());
-        response.setRole(user.getRole().name());
+
+
+        String roleName = user.getRoles().stream().findFirst().map(Role::getName).orElse("UNKNOWN");
+        response.setRole(roleName);
+
         response.setToken("Bearer " + token);
 
         return ResponseEntity.ok(response);
@@ -61,8 +76,15 @@ public class UserController {
         if (user.getName() == null || user.getEmail() == null || user.getPassword() == null) {
             return ResponseEntity.badRequest().body("All fields are required.");
         }
+
+        // P.sh. vendos "USER" si rol default
+        Role role = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("Default role not found"));
+
+        user.setRoles(Set.of(role));
         user.setTenantId(1L);
         userService.saveUser(user);
+
         return ResponseEntity.ok("User registered successfully!");
     }
 }

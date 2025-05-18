@@ -9,8 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -26,15 +26,23 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
+        Set<GrantedAuthority> authorities = new HashSet<>();
+
+        // Add dynamic permissions from each role
+        user.getRoles().forEach(role -> {
+            role.getPermissions().forEach(permission -> {
+                String authority = permission.getHttpMethod() + ":" + permission.getUrlPattern();
+                authorities.add(new SimpleGrantedAuthority(authority));
+            });
+
+            // Optional: also add the role name itself
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+        });
+
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                getAuthorities(user.getRole().name())
-
+                authorities
         );
-    }
-
-    private Collection<? extends GrantedAuthority> getAuthorities(String role) {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
     }
 }
