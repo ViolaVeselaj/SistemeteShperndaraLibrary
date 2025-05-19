@@ -46,16 +46,18 @@ const Button = styled.button`
   }
 `;
 
-const BookCard = ({ book, handleOpenReviewForm }) => {
+const BookCard = ({ book = {}, handleOpenReviewForm = () => {} }) => {
   const handleFavouriteClick = () => {
-    alert(`"${book.title}" u shtua në favourites!`);
+    if (book.title) {
+      alert(`"${book.title}" u shtua në favourites!`);
+    }
   };
 
   return (
     <Card>
       <Info>
-        <Title>{book.title}</Title>
-        <Extra>{book.author1}</Extra>
+        <Title>{book?.title || "Titull i panjohur"}</Title>
+        <Extra>{book?.author1 || "Autor i panjohur"}</Extra>
       </Info>
       <div style={{ display: "flex", gap: "10px" }}>
         <Button onClick={handleFavouriteClick}>+ Favourites</Button>
