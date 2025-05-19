@@ -1,11 +1,12 @@
 package com.example.sistemeteshperndara.controller;
 
 import com.example.sistemeteshperndara.model.Event;
-import com.example.sistemeteshperndara.security.CurrentUser;
+import com.example.sistemeteshperndara.model.User;
+import com.example.sistemeteshperndara.repository.UserRepository;
 import com.example.sistemeteshperndara.service.EventService;
-import com.example.sistemeteshperndara.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,10 +19,7 @@ public class EventController {
     private EventService eventService;
 
     @Autowired
-    private CurrentUser currentUser;
-
-    @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
 
     @GetMapping
     public List<Event> getAllEvents() {
@@ -29,14 +27,16 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createEvent(@RequestBody Event event) {
-        String role = currentUser.getCurrentRole();
-        if (!role.equals("ADMIN") && !role.equals("LIBRARIAN")) {
-            return ResponseEntity.status(403).body("Only admins or librarians can create events.");
-        }
+    public ResponseEntity<?> createEvent(@RequestBody Event event, Authentication authentication) {
+        // Merr user-in që është i kyçur
+        String email = authentication.getName();
 
-        event.setOrganizer(userService.getCurrentUser());
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        event.setOrganizer(currentUser);
         eventService.saveEvent(event);
+
         return ResponseEntity.ok("Event created successfully.");
     }
 

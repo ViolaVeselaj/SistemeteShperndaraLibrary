@@ -62,28 +62,39 @@ const EventForm = ({ onEventCreated }) => {
       };
   
       try {
-        const res = await axios.post("http://localhost:8080/events", formattedData, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-    
-        if (res.status === 200 || res.status === 201) {
-          alert("Eventi u shtua me sukses!");
-          setFormData({
-            title: "",
-            description: "",
-            location: "",
-            eventDate: ""
-          });
-          onEventCreated();
-        } else {
-          alert("Gabim gjatë shtimit të eventit");
+      const res = await axios.post("http://localhost:8080/events", formattedData, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      } catch (err) {
-        console.error("Gabim gjatë postimit të eventit:", err);
+      });
+
+      console.log("Statusi:", res.status);
+      console.log("Data:", res.data);
+
+      if (res.status === 200 || res.status === 201) {
+        alert("Eventi u shtua me sukses!");
+        setFormData({
+          title: "",
+          description: "",
+          location: "",
+          eventDate: ""
+        });
+
+        try {
+          await onEventCreated(); // kjo mund të jetë async dhe të shkaktojë error
+        } catch (e) {
+          console.error("Gabim gjatë onEventCreated:", e);
+        }
+
+      } else {
         alert("Gabim gjatë shtimit të eventit");
       }
+
+    } catch (err) {
+      console.error("Gabim gjatë postimit të eventit:", err);
+      alert("Gabim gjatë shtimit të eventit");
+    }
+
     };
   
     return (
