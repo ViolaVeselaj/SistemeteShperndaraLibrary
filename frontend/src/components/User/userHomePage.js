@@ -204,8 +204,7 @@ function UserHomePage() {
         {layout === "grid" && (
           <BookGrid layout="grid">
             {filteredBooks.map((book) => (
-              <BookCard key={book.id}>
-                <img
+               <BookCard key={book.id} onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>                <img
                   src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
                   alt={book.title}
                 />
@@ -220,9 +219,8 @@ function UserHomePage() {
         {layout === "single" && (
           <BookGrid layout="single">
             {filteredBooks.map((book) => (
-              <BookCard key={book.id}>
-                <img
-                  src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
+                  <BookCard key={book.id} onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>        
+                          <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
                   alt={book.title}
                 />
                 <div className="info">
@@ -241,7 +239,7 @@ function UserHomePage() {
         {layout === "carousel" && (
           <CarouselWrapper>
             {filteredBooks.map((book) => (
-              <CarouselCard key={book.id}>
+              <CarouselCard key={book.id} onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>
                 <img
                   src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
                   alt={book.title}

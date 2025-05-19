@@ -43,6 +43,7 @@ const AppRoutes = () => {
           </PrivateRoute>
         }
       />
+      
 
       <Route
         path="/admin/add-author"
