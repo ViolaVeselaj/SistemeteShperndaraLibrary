@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> {
                     authz
                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                            .requestMatchers("/auth/login", "/users/add").permitAll()
+                            .requestMatchers("/auth/login", "/users/add", "/users/login").permitAll()
 
                             // ✅ Swagger UI endpoints
                             .requestMatchers(
