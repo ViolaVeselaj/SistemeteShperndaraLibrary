@@ -89,3 +89,18 @@ export const EventListWrapper = styled.div`
   gap: 1rem;
 `;
 
+export const ReviewItem = styled.div`
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1.2rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  border-left: 5px solid #8a63d2;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+`;
+
+export const ReviewListWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;

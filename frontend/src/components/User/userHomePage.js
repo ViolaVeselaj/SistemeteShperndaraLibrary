@@ -201,16 +201,18 @@ function UserHomePage() {
           <option value="horizontal">Sipas Zhanrit</option>
         </LayoutSelector>
 
+      
+
         {layout === "grid" && (
           <BookGrid layout="grid">
             {filteredBooks.map((book) => (
-               <BookCard key={book.id} onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>                <img
+               <BookCard key={book.id} >                <img
                   src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
                   alt={book.title}
                 />
-                <h3>{book.title}</h3>
+                <h3 onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }} >{book.title}</h3>
                 <p>{book.author1}</p>
-                <button onClick={() => handleOpenReviewForm(book)}>Shto Review</button>
+                <button onClick={() => handleOpenReviewForm(book)} style={{ cursor: "pointer" }} >Shto Review</button>
               </BookCard>
             ))}
           </BookGrid>
@@ -219,17 +221,17 @@ function UserHomePage() {
         {layout === "single" && (
           <BookGrid layout="single">
             {filteredBooks.map((book) => (
-                  <BookCard key={book.id} onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>        
-                          <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
+                  <BookCard key={book.id} >        
+            <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
                   alt={book.title}
                 />
                 <div className="info">
-                  <h3>{book.title}</h3>
+                  <h3 onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }} >{book.title} </h3>
                   <p className="author">{book.author1}</p>
                   <p className="description">
                     Përshkrimi do të vijë nga databaza në versionin e ardhshëm.
                   </p>
-                  <button onClick={() => handleOpenReviewForm(book)}>Shto Review</button>
+                  <button onClick={() => handleOpenReviewForm(book)} style={{ cursor: "pointer" }}>Shto Review</button>
                 </div>
               </BookCard>
             ))}
@@ -239,14 +241,14 @@ function UserHomePage() {
         {layout === "carousel" && (
           <CarouselWrapper>
             {filteredBooks.map((book) => (
-              <CarouselCard key={book.id} onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>
+              <CarouselCard key={book.id} >
                 <img
                   src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
                   alt={book.title}
                 />
-                <h3>{book.title}</h3>
+                <h3 onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>{book.title}</h3>
                 <p>{book.author1}</p>
-                <button onClick={() => handleOpenReviewForm(book)}>Shto Review</button>
+                <button onClick={() => handleOpenReviewForm(book)} style={{ cursor: "pointer" }} >Shto Review</button>
               </CarouselCard>
             ))}
           </CarouselWrapper>
@@ -264,9 +266,9 @@ function UserHomePage() {
                         src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
                         alt={book.title}
                       />
-                      <h3>{book.title}</h3>
+                      <h3 onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>{book.title}</h3>
                       <p>{book.author1}</p>
-                      <button onClick={() => handleOpenReviewForm(book)}>Shto Review</button>
+                      <button onClick={() => handleOpenReviewForm(book)} style={{ cursor: "pointer" }}>Shto Review</button>
                     </HorizontalBookCard>
                   ))}
                 </HorizontalScrollContainer>
