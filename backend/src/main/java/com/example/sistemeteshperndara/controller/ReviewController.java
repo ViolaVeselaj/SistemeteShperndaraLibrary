@@ -23,20 +23,19 @@ public class ReviewController {
     @Autowired
     private UserService userService;
 
-    // ✅ Merr të gjitha review-t për ADMIN
+    @PreAuthorize("hasAuthority('GET:/reviews')")
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public List<Review> getAllReviews() {
         return reviewService.getAllReviews();
     }
 
-    // Merr të gjitha review-t për një libër
+    @PreAuthorize("hasAuthority('GET:/reviews/book/{bookId}')")
     @GetMapping("/book/{bookId}")
     public List<Review> getReviewsForBook(@PathVariable Long bookId) {
         return reviewService.getReviewsForBook(bookId);
     }
 
-    // Shto review për një libër me path variable
+    @PreAuthorize("hasAuthority('POST:/reviews/book/{bookId}')")
     @PostMapping("/book/{bookId}")
     public ResponseEntity<String> addReview(@PathVariable Long bookId, @RequestBody Map<String, Object> body) {
         int rating = (int) body.get("rating");
@@ -47,7 +46,7 @@ public class ReviewController {
         return ResponseEntity.ok("Review submitted successfully.");
     }
 
-    // Shto review për një libër me bookId nga body
+    @PreAuthorize("hasAuthority('POST:/reviews')")
     @PostMapping
     public ResponseEntity<String> createReview(@RequestBody Map<String, Object> body) {
         Long bookId = Long.valueOf(body.get("bookId").toString());
@@ -60,3 +59,4 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Review u ruajt me sukses");
     }
 }
+
