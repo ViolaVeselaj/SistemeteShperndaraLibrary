@@ -45,7 +45,7 @@ Ky sistem është krijuar me qëllim që të jetë i lehtë për t’u zgjeruar,
 - **Database:** MySQL  
 - **Security:** JWT + Role-Based Access Control
 
-## ⚙️ Funksionalitetet Kryesore
+## Funksionalitetet Kryesore
 
 - Regjistrimi dhe autentikimi i përdoruesve
 - Menaxhimi i librave (shtim, përditësim, fshirje)
@@ -54,7 +54,7 @@ Ky sistem është krijuar me qëllim që të jetë i lehtë për t’u zgjeruar,
 - Rekomandime për libra trending
 - Mbështetje për role: ADMIN dhe USER
 
----## 🛠️ Teknologjitë e Përdorura
+## Teknologjitë e Përdorura
 
 | Teknologji     | Përshkrim                         |
 |----------------|-------------------------------    |
@@ -63,4 +63,4 @@ Ky sistem është krijuar me qëllim që të jetë i lehtë për t’u zgjeruar,
 | MySQL          | Bazë të dhënash relacional        |
 | JWT            | Autentifikim dhe autorizim        |
 
----
+
