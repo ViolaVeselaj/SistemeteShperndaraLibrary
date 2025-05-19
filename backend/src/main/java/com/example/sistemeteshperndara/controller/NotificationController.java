@@ -4,6 +4,8 @@ import com.example.sistemeteshperndara.model.Notification;
 import com.example.sistemeteshperndara.model.User;
 import com.example.sistemeteshperndara.service.NotificationService;
 import com.example.sistemeteshperndara.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,18 +22,22 @@ public class NotificationController {
     @Autowired
     private UserService userService;
 
+    @Operation(summary = "Kthen të gjitha njoftimet e përdoruesit të kyçur")
     @GetMapping
     public List<Notification> getMyNotifications() {
         return notificationService.getUserNotifications();
     }
 
+    @Operation(summary = "Shënon një njoftim si të lexuar")
     @PutMapping("/{id}/mark-read")
-    public ResponseEntity<String> markNotificationAsRead(@PathVariable Long id) {
+    public ResponseEntity<String> markNotificationAsRead(
+            @Parameter(description = "ID e njoftimit që do të shënohet si i lexuar")
+            @PathVariable Long id) {
         notificationService.markAsRead(id);
         return ResponseEntity.ok("Notification marked as read");
     }
 
-    // Test endpoint për të dërguar një njoftim manualisht
+    @Operation(summary = "Dërgon një njoftim testues për përdoruesin e kyçur")
     @PostMapping("/test")
     public ResponseEntity<String> sendTestNotification() {
         User user = userService.getCurrentUser();
