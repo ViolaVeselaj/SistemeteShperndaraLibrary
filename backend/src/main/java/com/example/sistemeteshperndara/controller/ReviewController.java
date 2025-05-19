@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,13 @@ public class ReviewController {
 
     @Autowired
     private UserService userService;
+
+    // ✅ Merr të gjitha review-t për ADMIN
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Review> getAllReviews() {
+        return reviewService.getAllReviews();
+    }
 
     // Merr të gjitha review-t për një libër
     @GetMapping("/book/{bookId}")
@@ -46,7 +54,7 @@ public class ReviewController {
         int rating = Integer.parseInt(body.get("rating").toString());
         String comment = body.get("comment").toString();
 
-        User user = userService.getCurrentUser(); // përdor userService që e ke
+        User user = userService.getCurrentUser();
         reviewService.createReview(bookId, rating, comment, user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Review u ruajt me sukses");

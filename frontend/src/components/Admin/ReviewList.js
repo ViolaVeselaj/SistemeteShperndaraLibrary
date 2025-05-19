@@ -10,7 +10,7 @@ const ReviewList = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get("/api/reviews", {
+        const res = await axios.get("/reviews", {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -25,6 +25,22 @@ const ReviewList = () => {
     fetchReviews();
   }, []);
 
+  useEffect(() => {
+  const fetchReviews = async () => {
+    try {
+      const res = await axios.get("/reviews");
+      console.log("REVIEW COUNT:", res.data.length);
+      console.log("ALL REVIEWS:", res.data);
+      setReviews(res.data);
+    } catch (error) {
+      console.error("Gabim gjatë marrjes së reviews:", error);
+    }
+  };
+
+  fetchReviews();
+}, []);
+
+
   return (
     <Section>
       <SectionTitle>Lista e Reviews</SectionTitle>
@@ -32,7 +48,6 @@ const ReviewList = () => {
         <ReviewItem key={index}>
           <p><strong>Komenti:</strong> {review.comment}</p>
           <p><strong>Rating:</strong> {review.rating}</p>
-          <p><strong>Data:</strong> {new Date(review.created_at).toLocaleString()}</p>
         </ReviewItem>
       ))}
     </Section>
@@ -40,4 +55,3 @@ const ReviewList = () => {
 };
 
 export default ReviewList;
-    

@@ -40,5 +40,10 @@ public class ReviewService {
 
         reviewRepository.save(review);
     }
+    public List<Review> getAllReviews() {
+        return reviewRepository.findAllUnfiltered();
+    }
+
+
 }
 
