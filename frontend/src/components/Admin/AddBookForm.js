@@ -70,20 +70,27 @@ const AddBookForm = () => {
   const [authors, setAuthors] = useState([]);
   const [newAuthor, setNewAuthor] = useState('');
 
-  useEffect(() => {
-    axios.get('/authors')
-      .then((res) => {
-        if (Array.isArray(res.data)) {
-          setAuthors(res.data);
-        } else {
-          toast.error("Invalid response from server");
+    useEffect(() => {
+      const token = localStorage.getItem('token');
+
+      axios.get('/authors', {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
       })
-      .catch((err) => {
-        toast.error("Failed to fetch authors");
-        console.error(err);
-      });
-  }, []);
+        .then((res) => {
+          if (res.status === 200 && Array.isArray(res.data)) {
+            setAuthors(res.data);
+          } else {
+            toast.error("Unexpected response structure");
+          }
+        })
+        .catch((err) => {
+          toast.error("Failed to fetch authors");
+          console.error(err);
+        });
+    }, []);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;

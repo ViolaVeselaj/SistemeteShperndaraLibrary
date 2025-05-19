@@ -12,6 +12,9 @@ import AddAuthorForm from "../Admin/AddAuthorForm";
 import RegisterUserForm from "../Admin/RegisterUserForm";
 import UserProfile from "../User/UserProfile";
 import LoanRequestsPanel from "../Admin/LoanRequestsPanel";
+import EventForm from "../Admin/EventForm";
+import EventList from "../Admin/EventList";
+
 
 
 const AppRoutes = () => {
@@ -87,6 +90,17 @@ const AppRoutes = () => {
     </PrivateRoute>
   }
 />
+<Route
+  path="/admin/register-user"
+  element={
+    <PrivateRoute role="LIBRARIAN">
+      <RegisterUserForm />
+    </PrivateRoute>
+  }
+/>
+
+
+
 
 <Route
   path="/profile"
@@ -96,7 +110,23 @@ const AppRoutes = () => {
     </PrivateRoute>
   }
 />
+<Route
+  path="/admin/events/add"
+  element={
+    <PrivateRoute role="ADMIN">
+      <EventForm />
+    </PrivateRoute>
+  }
+/>
 
+<Route
+  path="/admin/events/list"
+  element={
+    <PrivateRoute role="ADMIN">
+      <EventList />
+    </PrivateRoute>
+  }
+/>
 
 
 

@@ -5,16 +5,19 @@ import com.example.sistemeteshperndara.dto.AuthResponse;
 import com.example.sistemeteshperndara.model.Role;
 import com.example.sistemeteshperndara.model.User;
 import com.example.sistemeteshperndara.repository.RoleRepository;
+import com.example.sistemeteshperndara.repository.UserRepository;
 import com.example.sistemeteshperndara.security.JwtService;
 import com.example.sistemeteshperndara.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -26,10 +29,16 @@ public class UserController {
     private UserService userService;
 
     @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private JwtService jwtService;
 
     @Autowired
-    private RoleRepository roleRepository;
+    private AuthenticationManager authenticationManager;
 
     @GetMapping
     public List<User> getAllUsers() {
@@ -38,37 +47,58 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody AuthRequest loginRequest) {
-        User user = userService.findByEmail(loginRequest.getEmail());
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
+                    )
+            );
 
-        boolean passwordMatches = userService.checkPassword(loginRequest.getPassword(), user.getPassword());
-        if (!passwordMatches) {
-            return ResponseEntity.status(401).body("Invalid credentials");
+            Optional<User> optionalUser = userRepository.findByEmail(loginRequest.getEmail());
+            if (optionalUser.isEmpty()) {
+                return ResponseEntity.status(401).body("User not found");
+            }
+
+            User user = optionalUser.get();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+            String token = jwtService.generateToken(userDetails, user.getTenantId(), user.getId());
+
+            String roleName = user.getRoles().stream()
+                    .findFirst()
+                    .map(Role::getName)
+                    .orElse("UNKNOWN");
+
+            AuthResponse response = new AuthResponse();
+            response.setToken("Bearer " + token);
+            response.setEmail(user.getEmail());
+            response.setName(user.getName());
+            response.setRole(roleName);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(403).body("Login failed: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/by-tenant")
+    public ResponseEntity<?> getUsersByTenant(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("Unauthorized");
         }
 
-        List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
-                .flatMap(role -> role.getPermissions().stream())
-                .map(p -> new SimpleGrantedAuthority(p.getHttpMethod() + ":" + p.getUrlPattern()))
-                .toList();
+        // Merr email-in nga userDetails
+        String email = authentication.getName();
 
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                authorities
-        );
+        // Merr user-in nga DB
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String token = jwtService.generateToken(userDetails, user.getTenantId(), user.getId());
+        List<User> users = userService.getUsersByTenantId(currentUser.getTenantId());
 
-        AuthResponse response = new AuthResponse();
-        response.setName(user.getName());
-        response.setEmail(user.getEmail());
-
-
-        String roleName = user.getRoles().stream().findFirst().map(Role::getName).orElse("UNKNOWN");
-        response.setRole(roleName);
-
-        response.setToken("Bearer " + token);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(users);
     }
 
     @PostMapping("/add")
@@ -77,11 +107,10 @@ public class UserController {
             return ResponseEntity.badRequest().body("All fields are required.");
         }
 
-        // P.sh. vendos "USER" si rol default
-        Role role = roleRepository.findByName("USER")
+        Role defaultRole = roleRepository.findByName("USER")
                 .orElseThrow(() -> new RuntimeException("Default role not found"));
 
-        user.setRoles(Set.of(role));
+        user.setRoles(Set.of(defaultRole));
         user.setTenantId(1L);
         userService.saveUser(user);
 

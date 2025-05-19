@@ -20,10 +20,15 @@ export const AuthProvider = ({ children }) => {
     }, []);
   
     const login = (userData, jwtToken) => {
-      setUser(userData);
-      setToken(jwtToken);
+  setUser(userData);
+
+    const cleanedToken = jwtToken.startsWith("Bearer ")
+        ? jwtToken.replace("Bearer ", "")
+        : jwtToken;
+
+      setToken(cleanedToken);
       localStorage.setItem("user", JSON.stringify(userData));
-      localStorage.setItem("token", jwtToken);
+      localStorage.setItem("token", cleanedToken);
     };
   
     const logout = () => {

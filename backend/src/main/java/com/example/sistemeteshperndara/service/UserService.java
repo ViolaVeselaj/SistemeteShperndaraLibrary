@@ -38,6 +38,11 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+    public List<User> getUsersByTenantId(Long tenantId) {
+        return userRepository.findAllByTenantId(tenantId);
+    }
+
+
     public boolean checkPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
