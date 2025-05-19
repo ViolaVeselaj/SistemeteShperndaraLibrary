@@ -47,12 +47,18 @@ public class SecurityConfig {
                 .authenticationProvider(daoAuthProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authz -> {
-                    // Allow CORS preflight requests and login/signup
                     authz
                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                            .requestMatchers("/auth/login", "/users/add").permitAll();
+                            .requestMatchers("/auth/login", "/users/add").permitAll()
 
-                    // Load dynamic permissions
+                            // ✅ Swagger UI endpoints
+                            .requestMatchers(
+                                    "/v3/api-docs/**",
+                                    "/swagger-ui/**",
+                                    "/swagger-ui.html"
+                            ).permitAll();
+
+                    // ✅ Dynamic permissions from DB
                     permissionRepo.findAll().forEach(p -> {
                         try {
                             authz.requestMatchers(
@@ -64,7 +70,6 @@ public class SecurityConfig {
                         }
                     });
 
-                    // All other requests must be authenticated
                     authz.anyRequest().authenticated();
                 });
 
