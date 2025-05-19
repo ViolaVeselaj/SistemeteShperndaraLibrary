@@ -5,8 +5,6 @@ import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
 import { useNavigate } from "react-router-dom";
 
-
-
 const LayoutWrapper = styled.div`
   padding: 100px 2rem 2rem 2rem;
   min-height: 100vh;
@@ -111,18 +109,39 @@ const HorizontalBookCard = styled(BookCard)`
   flex: 0 0 200px;
 `;
 
-
-
 function UserHomePage() {
-
   const navigate = useNavigate();
   const handleBookClick = (bookId) => {
     navigate(`/books/${bookId}`);
   };
-  
+
   const [layout, setLayout] = useState("grid");
   const [query, setQuery] = useState("");
   const [books, setBooks] = useState([]);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [selectedBook, setSelectedBook] = useState(null);
+  const [reviewData, setReviewData] = useState({ rating: 5, comment: "" });
+
+  const handleOpenReviewForm = (book) => {
+    setSelectedBook(book);
+    setShowReviewForm(true);
+  };
+
+  const handleSubmitReview = async () => {
+    try {
+      await axios.post("/reviews", {
+        bookId: selectedBook.id,
+        rating: reviewData.rating,
+        comment: reviewData.comment,
+      });
+      alert("Review u dërgua me sukses!");
+      setShowReviewForm(false);
+      setReviewData({ rating: 5, comment: "" });
+    } catch (error) {
+      console.error("Gabim gjatë dërguar review-it:", error);
+      alert("Dërgimi i review-it dështoi.");
+    }
+  };
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -139,7 +158,8 @@ function UserHomePage() {
   }, []);
 
   const filteredBooks = useMemo(() => {
-    return books.filter((book) => book.title.toLowerCase().includes(query.toLowerCase()) ||
+    return books.filter((book) =>
+      book.title.toLowerCase().includes(query.toLowerCase()) ||
       (book.author1 && book.author1.toLowerCase().includes(query.toLowerCase()))
     );
   }, [books, query]);
@@ -148,14 +168,16 @@ function UserHomePage() {
 
   const genreBooks = useMemo(() => {
     if (layout !== "horizontal") return [];
-    return genres.map((genre, index) => books
-      .filter((book) => book.title.toLowerCase().includes(genre.toLowerCase())
-      )
-      .slice(0, 10)
-      .map((book, i) => ({
-        ...book,
-        id: `${index}-${i}`,
-      }))
+    return genres.map((genre, index) =>
+      books
+        .filter((book) =>
+          book.title.toLowerCase().includes(genre.toLowerCase())
+        )
+        .slice(0, 10)
+        .map((book, i) => ({
+          ...book,
+          id: `${index}-${i}`,
+        }))
     );
   }, [layout, books]);
 
@@ -165,10 +187,14 @@ function UserHomePage() {
         titles={["Ballina", "Zhanret", "Rekomandime", "Biblioteka Ime"]}
         books={books}
         query={query}
-        setQuery={setQuery} />
+        setQuery={setQuery}
+      />
 
       <LayoutWrapper>
-        <LayoutSelector value={layout} onChange={(e) => setLayout(e.target.value)}>
+        <LayoutSelector
+          value={layout}
+          onChange={(e) => setLayout(e.target.value)}
+        >
           <option value="grid">Grid Layout</option>
           <option value="single">Single Column</option>
           <option value="carousel">Carousel</option>
@@ -178,10 +204,14 @@ function UserHomePage() {
         {layout === "grid" && (
           <BookGrid layout="grid">
             {filteredBooks.map((book) => (
-              <BookCard key={book.id} onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>
-                <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60" alt={book.title} />
+              <BookCard key={book.id}>
+                <img
+                  src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
+                  alt={book.title}
+                />
                 <h3>{book.title}</h3>
                 <p>{book.author1}</p>
+                <button onClick={() => handleOpenReviewForm(book)}>Shto Review</button>
               </BookCard>
             ))}
           </BookGrid>
@@ -190,16 +220,18 @@ function UserHomePage() {
         {layout === "single" && (
           <BookGrid layout="single">
             {filteredBooks.map((book) => (
-              <BookCard key={book.id} onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>
+              <BookCard key={book.id}>
                 <img
                   src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
-                  alt={book.title} />
+                  alt={book.title}
+                />
                 <div className="info">
                   <h3>{book.title}</h3>
                   <p className="author">{book.author1}</p>
                   <p className="description">
                     Përshkrimi do të vijë nga databaza në versionin e ardhshëm.
                   </p>
+                  <button onClick={() => handleOpenReviewForm(book)}>Shto Review</button>
                 </div>
               </BookCard>
             ))}
@@ -209,12 +241,14 @@ function UserHomePage() {
         {layout === "carousel" && (
           <CarouselWrapper>
             {filteredBooks.map((book) => (
-              <CarouselCard key={book.id} onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>
-               <img
+              <CarouselCard key={book.id}>
+                <img
                   src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
-                  alt={book.title} />
+                  alt={book.title}
+                />
                 <h3>{book.title}</h3>
                 <p>{book.author1}</p>
+                <button onClick={() => handleOpenReviewForm(book)}>Shto Review</button>
               </CarouselCard>
             ))}
           </CarouselWrapper>
@@ -230,15 +264,40 @@ function UserHomePage() {
                     <HorizontalBookCard key={book.id}>
                       <img
                         src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
-                        alt={book.title} />
+                        alt={book.title}
+                      />
                       <h3>{book.title}</h3>
                       <p>{book.author1}</p>
+                      <button onClick={() => handleOpenReviewForm(book)}>Shto Review</button>
                     </HorizontalBookCard>
                   ))}
                 </HorizontalScrollContainer>
               </HorizontalScrollSection>
             ))}
           </>
+        )}
+
+        {showReviewForm && (
+          <div style={{ background: "#222", padding: "2rem", borderRadius: "10px", color: "white" }}>
+            <h3>Jep vlerësimin për: {selectedBook.title}</h3>
+            <label>Rating (1-5):</label>
+            <input
+              type="number"
+              min="1"
+              max="5"
+              value={reviewData.rating}
+              onChange={(e) => setReviewData({ ...reviewData, rating: e.target.value })}
+            /><br />
+            <label>Komenti:</label>
+            <textarea
+              rows="4"
+              cols="40"
+              value={reviewData.comment}
+              onChange={(e) => setReviewData({ ...reviewData, comment: e.target.value })}
+            ></textarea><br />
+            <button onClick={handleSubmitReview}>Dërgo Review</button>
+            <button onClick={() => setShowReviewForm(false)}>Anulo</button>
+          </div>
         )}
       </LayoutWrapper>
 
@@ -248,4 +307,3 @@ function UserHomePage() {
 }
 
 export default UserHomePage;
-
