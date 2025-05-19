@@ -14,6 +14,7 @@ import UserProfile from "../User/UserProfile";
 import LoanRequestsPanel from "../Admin/LoanRequestsPanel";
 
 
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -87,6 +88,17 @@ const AppRoutes = () => {
     </PrivateRoute>
   }
 />
+<Route
+  path="/admin/register-user"
+  element={
+    <PrivateRoute role="LIBRARIAN">
+      <RegisterUserForm />
+    </PrivateRoute>
+  }
+/>
+
+
+
 
 <Route
   path="/profile"
