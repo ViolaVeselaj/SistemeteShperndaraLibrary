@@ -7,6 +7,8 @@ import com.example.sistemeteshperndara.repository.BookRequestSuggestionRepositor
 import com.example.sistemeteshperndara.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.time.Instant;
+
 
 @Service
 public class BookRequestSuggestionService {
@@ -15,11 +17,10 @@ public class BookRequestSuggestionService {
     private BookRequestSuggestionRepository suggestionRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     public BookRequestSuggestion createSuggestion(BookRequestSuggestionDTO dto) {
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userService.getCurrentUser();
 
         BookRequestSuggestion suggestion = new BookRequestSuggestion();
         suggestion.setTitle(dto.getTitle());
@@ -27,8 +28,9 @@ public class BookRequestSuggestionService {
         suggestion.setGenre(dto.getGenre());
         suggestion.setUser(user);
         suggestion.setStatus(BookRequestSuggestion.Status.PENDING);
-        suggestion.setSuggestedAt(java.time.Instant.now());
+        suggestion.setSuggestedAt(Instant.now());
 
         return suggestionRepository.save(suggestion);
     }
 }
+
