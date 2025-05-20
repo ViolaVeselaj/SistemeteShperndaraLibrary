@@ -50,7 +50,7 @@ public class SecurityConfig {
                     authz
                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                             .requestMatchers("/auth/login", "/users/add", "/users/login").permitAll()
-                            .requestMatchers("/tenants").permitAll()
+
                             // ✅ Swagger UI endpoints
                             .requestMatchers(
                                     "/v3/api-docs/**",
@@ -97,8 +97,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        //configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        configuration.setAllowedOrigins(List.of("*")); // Lejon nga të gjitha originat për test
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

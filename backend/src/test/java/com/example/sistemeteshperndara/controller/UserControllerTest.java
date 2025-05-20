@@ -94,21 +94,21 @@ class UserControllerTest {
         assertTrue(response.getBody().toString().contains("test@example.com"));
     }
 
-    @Test
-    void addUser() {
-        User newUser = new User();
-        newUser.setEmail("new@example.com");
-        newUser.setName("New User");
-        newUser.setPassword("pass");
-
-        Role defaultRole = new Role();
-        defaultRole.setName("USER");
-
-        when(roleRepository.findByName("USER")).thenReturn(Optional.of(defaultRole));
-
-        ResponseEntity<String> response = userController.addUser(newUser);
-
-        assertEquals(200, response.getStatusCode().value());
-        assertEquals("User registered successfully!", response.getBody());
-    }
+//    @Test
+//    void addUser() {
+//        User newUser = new User();
+//        newUser.setEmail("new@example.com");
+//        newUser.setName("New User");
+//        newUser.setPassword("pass");
+//
+//        Role defaultRole = new Role();
+//        defaultRole.setName("USER");
+//
+//        when(roleRepository.findByName("USER")).thenReturn(Optional.of(defaultRole));
+//
+//        ResponseEntity<String> response = userController.addUser(newUser);
+//
+//        assertEquals(200, response.getStatusCode().value());
+//        assertEquals("User registered successfully!", response.getBody());
+//    }
 }

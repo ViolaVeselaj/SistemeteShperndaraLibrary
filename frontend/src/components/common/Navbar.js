@@ -1,7 +1,9 @@
 // 🔄 Navbar me dropdown për profil, log out dhe kërkim funksional për libra (i lidhur me HomePage)
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+
 
 const NavbarWrapper = styled.nav`
   display: flex;
@@ -117,33 +119,38 @@ const Dropdown = styled.div`
 const Navbar = ({ titles = [], books = [], query, setQuery }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const { logout } = useContext(AuthContext); 
 
   const filteredBooks = (books || []).filter(book =>
     book.title.toLowerCase().includes(query.toLowerCase()) ||
     book.author.toLowerCase().includes(query.toLowerCase())
   );
 
+  const handleLogout = () => {
+    logout();            
+    navigate("/login");  
+  };
+
   return (
     <NavbarWrapper>
       <NavLinks>
-  {titles.map((title, index) => (
-    <button
-      key={index}
-      onClick={() => navigate(`/${title.toLowerCase().replace(/ /g, '-')}`)}
-      style={{
-        background: "none",
-        border: "none",
-        color: "white",
-        fontWeight: "500",
-        cursor: "pointer",
-        fontSize: "1rem"
-      }}
-    >
-      {title}
-    </button>
-  ))}
-</NavLinks>
-
+        {titles.map((title, index) => (
+          <button
+            key={index}
+            onClick={() => navigate(`/${title.toLowerCase().replace(/ /g, "-")}`)}
+            style={{
+              background: "none",
+              border: "none",
+              color: "white",
+              fontWeight: "500",
+              cursor: "pointer",
+              fontSize: "1rem"
+            }}
+          >
+            {title}
+          </button>
+        ))}
+      </NavLinks>
 
       <SearchWrapper>
         <SearchInput
@@ -175,7 +182,7 @@ const Navbar = ({ titles = [], books = [], query, setQuery }) => {
         {dropdownOpen && (
           <Dropdown>
             <button onClick={() => navigate("/profile")}>Profili</button>
-            <button onClick={() => alert("Duke u shkyçur...")}>Log Out</button>
+            <button onClick={handleLogout}>Log Out</button>
           </Dropdown>
         )}
       </ProfileWrapper>
