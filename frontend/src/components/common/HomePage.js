@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled, { keyframes, createGlobalStyle } from "styled-components";
-import Navbar from "../common/Navbar";
+//import Navbar from "../common/Navbar";
 import Login from "../auth/Login";
 import SignUp from "../auth/SignUp";
 
@@ -156,7 +156,7 @@ const HomePage = () => {
   return (
     <>
       <GlobalStyles />
-      <Navbar titles={[]} />
+      {/* <Navbar titles={[]} /> */}
       {showLogin && <Login />}
       {showSignup && <SignUp />}
       {!showLogin && !showSignup && (
