@@ -402,72 +402,37 @@ const SignUpButton = styled.div`
 const Login = () => {
    const [data, setData] = useState({
      email: "",
-     password: ""
+     password: "",
+     tenantId: ""
    });
- 
+
+   const [tenants, setTenants] = useState([]);
    const [errors, setErrors] = useState({});
    const [touched, setTouched] = useState({});
- 
+
    const navigate = useNavigate();
    const { login } = useContext(AuthContext);
 
    useTitle("Login Form");
- 
+
    useEffect(() => {
      setErrors(validation(data, "login"));
    }, [data, touched]);
- 
+
+   // 🔁 Merr tenantët nga API
+   useEffect(() => {
+      axios.get("http://localhost:8080/tenants")
+         .then((res) => setTenants(res.data))
+         .catch((err) => console.error("Failed to fetch tenants", err));
+   }, []);
+
    const handleTouch = (event) => {
-     setTouched({
-       ...touched,
-       [event.target.name]: true,
-     });
+     setTouched({ ...touched, [event.target.name]: true });
    };
- 
-    const handleSubmit = async (event) => {
-      event.preventDefault();
-    
-      if (!Object.keys(errors).length) {
-        try {
-          const response = await axios.post("http://localhost:8080/auth/login", {
-            email: data.email,
-            password: data.password
-          });
 
-          console.log("LOGIN RESPONSE: ", response.data);
-    
-          const { token, name, email: userEmail, role } = response.data;
-    
-          login({ name, email: userEmail, role }, token); // ✅ përdorim i AuthContext
-    
-          notify("Successful Login!", "success");
-    
-          if (role === "ADMIN") {
-            navigate("/admin");
-          } else if (role === "USER") {
-            navigate("/userHomePage");
-          } else {
-            notify("Roli i panjohur!", "error");
-            navigate("/");
-          }
-    
-        } catch (error) {
-          notify("Invalid Username or Password!", "error");
-          console.error("Login error:", error);
-        }
-      } else {
-        notify("Please fill all fields correctly!", "error");
-        setTouched({ email: true, password: true });
-      }
-    };
-  
-
-    
    const handleChange = (event) => {
-     setData({
-       ...data,
-       [event.target.name]: event.target.value
-     });
+     setData({ ...data, [event.target.name]: event.target.value });
+
      if (event.target.value) {
        event.target.style.background = "#ffffff";
        event.target.style.color = "#000000";
@@ -476,28 +441,75 @@ const Login = () => {
        event.target.style.color = "transparent";
      }
    };
- 
+
+   const handleSubmit = async (event) => {
+      event.preventDefault();
+
+      if (!Object.keys(errors).length) {
+         try {
+            const response = await axios.post("http://localhost:8080/auth/login", {
+               email: data.email,
+               password: data.password,
+               tenantId: Number(data.tenantId)
+            });
+
+            const { token, name, email: userEmail, role } = response.data;
+
+            login({ name, email: userEmail, role }, token);
+
+            notify("Successful Login!", "success");
+
+            if (role === "ADMIN") {
+               navigate("/admin");
+            } else if (role === "USER") {
+               navigate("/userHomePage");
+            } else {
+               notify("Roli i panjohur!", "error");
+               navigate("/");
+            }
+         } catch (error) {
+            notify("Invalid Username, Password or Tenant!", "error");
+            console.error("Login error:", error);
+         }
+      } else {
+         notify("Please fill all fields correctly!", "error");
+         setTouched({ email: true, password: true, tenantId: true });
+      }
+   };
+
    return (
      <Container>
        <FormContainer>
-         <p>Log In </p>
+         <p>Log In</p>
          <form onSubmit={handleSubmit}>
            <InputContainer>
              <label className="labelClass">Email Address</label>
              <input type="text" name="email" value={data.email} className="inputClass" onChange={handleChange} onFocus={handleTouch} />
              {errors.email && touched.email && <span className="errors">{errors.email}</span>}
            </InputContainer>
+
            <InputContainer>
              <label className="labelClass">Password</label>
              <input type="password" name="password" value={data.password} className="inputClass" onChange={handleChange} onFocus={handleTouch} />
              {errors.password && touched.password && <span className="errors">{errors.password}</span>}
            </InputContainer>
+
+           <InputContainer>
+             <label className="labelClass"></label>
+             <select name="tenantId" value={data.tenantId} onChange={handleChange} onFocus={handleTouch} className="inputClass">
+               <option value="">Zgjedh bibliotekën</option>
+               {tenants.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+               ))}
+             </select>
+             {errors.tenantId && touched.tenantId && <span className="errors">{errors.tenantId}</span>}
+           </InputContainer>
+
            <div className="buttonContainer">
-             <button type="submit" className="Login">
-               Login
-             </button>
+             <button type="submit" className="Login">Login</button>
            </div>
          </form>
+
          <SignUpButton>
            <Link to="/signup">Sign Up</Link>
            <span></span>
@@ -506,7 +518,6 @@ const Login = () => {
        <ToastContainer />
      </Container>
    );
- };
- 
- export default Login;
- 
+};
+
+export default Login;

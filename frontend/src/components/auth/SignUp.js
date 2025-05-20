@@ -395,7 +395,6 @@ const LoginButton = styled.div`
 `;
 
 const SignUp = () => {
-
    const [data, setData] = useState({
       name: "",
       email: "",
@@ -405,41 +404,53 @@ const SignUp = () => {
       isAccepted: false
    });
 
+   const [tenants, setTenants] = useState([]);
    const [errors, setErrors] = useState({});
    const [touched, setTouched] = useState({});
 
    useTitle("Sign Up Form");
 
-   useEffect(()=>{
+   // 🔁 Merr tenantët nga backend
+   useEffect(() => {
+      axios.get("http://localhost:8080/tenants")
+         .then(res => setTenants(res.data))
+         .catch(err => console.error("Failed to load tenants", err));
+   }, []);
+
+   // 🔍 Validimi (supozojmë se ke një funksion validation të veçantë)
+   useEffect(() => {
       setErrors(validation(data, "signup"));
    }, [data, touched]);
 
-   const handleTouch = (event)=>{
-      setTouched({
-         ...touched,
-         [event.target.name]: true,
-      });
+   const handleTouch = (event) => {
+      setTouched({ ...touched, [event.target.name]: true });
+   };
+
+   const handleChange = (event) => {
+      const { name, value, checked, type } = event.target;
+      const fieldValue = type === "checkbox" ? checked : value;
+
+      setData(prev => ({ ...prev, [name]: fieldValue }));
    };
 
    const handleSubmit = async (event) => {
       event.preventDefault();
 
-      if(!Object.keys(errors).length){
+      if (!Object.keys(errors).length) {
          try {
-            
             const userData = {
                name: data.name,
                email: data.email,
                password: data.password,
-               role: data.select, // (ADMIN, LIBRARIAN, USER)
+               tenantId: Number(data.select),
             };
+
             const response = await axios.post("http://localhost:8080/users/add", userData, {
-               headers: {
-                  "Content-Type": "application/json",
-               },
+               headers: { "Content-Type": "application/json" }
             });
+
             notify(response.data, "success");
-         
+
             setData({
                name: "",
                email: "",
@@ -448,11 +459,10 @@ const SignUp = () => {
                select: "",
                isAccepted: false
             });
-   
          } catch (error) {
-            notify(error.response?.data || "Signup failed!", "error"); 
+            notify(error.response?.data || "Signup failed!", "error");
          }
-      }else{
+      } else {
          notify("Please fill all the fields correctly!", "error");
          setTouched({
             name: true,
@@ -465,75 +475,101 @@ const SignUp = () => {
       }
    };
 
-   const handleChange = (event)=>{
-      console.log(event.target.value);
-      if(event.target.name === "isAccepted"){
-         setData({
-            ...data,
-            [event.target.name]: event.target.checked
-         });
-      }else{
-         setData({
-            ...data,
-            [event.target.name]: event.target.value
-         });
-         if (event.target.value) {
-               event.target.style.background = "#ffffff";
-               event.target.style.color = "#000000";
-            } else {
-               event.target.style.background = "transparent";
-               event.target.style.color = "transparent";
-            }
-      }
-   };
-
    return (
       <Container>
          <FormContainer>
             <p>Sign Up</p>
             <form onSubmit={handleSubmit}>
                <InputContainer>
-                  <label className="labelClass">First Name</label>
-                  <input type="text" name="name" value={data.name} className={(errors.name && errors.touched) ? "hasError" : "inputClass"} onChange={handleChange} onFocus={handleTouch} />
-                  {errors.name && touched.name &&  <span className="errors">{errors.name}</span>}
+                  <label className="labelClass"></label>
+                  <input
+                     type="text"
+                     name="name"
+                     value={data.name}
+                     className="inputClass"
+                     onChange={handleChange}
+                     onFocus={handleTouch}
+                  />
+                  {errors.name && touched.name && <span className="errors">{errors.name}</span>}
                </InputContainer>
+
                <InputContainer>
                   <label className="labelClass">Email Address</label>
-                  <input type="text" name="email" value={data.email} className="inputClass" onChange={handleChange} onFocus={handleTouch}  />
+                  <input
+                     type="text"
+                     name="email"
+                     value={data.email}
+                     className="inputClass"
+                     onChange={handleChange}
+                     onFocus={handleTouch}
+                  />
                   {errors.email && touched.email && <span className="errors">{errors.email}</span>}
                </InputContainer>
+
                <InputContainer>
                   <label className="labelClass">Password</label>
-                  <input type="password" name="password" value={data.password} className="inputClass" onChange={handleChange} onFocus={handleTouch}  />
+                  <input
+                     type="password"
+                     name="password"
+                     value={data.password}
+                     className="inputClass"
+                     onChange={handleChange}
+                     onFocus={handleTouch}
+                  />
                   {errors.password && touched.password && <span className="errors">{errors.password}</span>}
                </InputContainer>
+
                <InputContainer>
                   <label className="labelClass">Confirm Password</label>
-                  <input type="password" name="confirmPassword" value={data.confirmPassword} className="inputClass" onChange={handleChange}  onFocus={handleTouch}  />
+                  <input
+                     type="password"
+                     name="confirmPassword"
+                     value={data.confirmPassword}
+                     className="inputClass"
+                     onChange={handleChange}
+                     onFocus={handleTouch}
+                  />
                   {errors.confirmPassword && touched.confirmPassword && <span className="errors">{errors.confirmPassword}</span>}
                </InputContainer>
+
                <div className="relativeContainer">
-               <select name="select" value={data.select} onChange={handleChange} onFocus={handleTouch} className="inputClass">
-                     <option value="USER">USER</option>
-                     <option value="LIBRARIAN">LIBRARIAN</option>
-                     <option value="ADMIN">ADMIN</option>
-               </select>
-               {errors.select && touched.select && <span className="errors">{errors.select}</span>}
+                  <label className="labelClass">Zgjedh bibliotekën</label>
+                  <select
+                     name="select"
+                     value={data.select}
+                     onChange={handleChange}
+                     onFocus={handleTouch}
+                     className="inputClass"
+                  >
+                     <option value="">Zgjedh bibliotekën</option>
+                     {tenants.map((tenant) => (
+                        <option key={tenant.id} value={tenant.id}>{tenant.name}</option>
+                     ))}
+                  </select>
+                  {errors.select && touched.select && <span className="errors">{errors.select}</span>}
                </div>
+
                <div className="relativeContainer">
-                  <label>I accept terms of privacy</label>
-                  <input type="checkbox" name="isAccepted" value={data.isAccepted} className="inputClass" onChange={handleChange} onFocus={handleTouch} />
+                  <label>
+                     <input
+                        type="checkbox"
+                        name="isAccepted"
+                        checked={data.isAccepted}
+                        onChange={handleChange}
+                        onFocus={handleTouch}
+                     />
+                     I accept terms of privacy
+                  </label>
                   {errors.isAccepted && touched.isAccepted && <span className="checkBoxErrors">{errors.isAccepted}</span>}
                </div>
+
                <div className="buttonContainer">
-                  <button type="submit" className="signup">
-                     Sign Up
-                  </button>
+                  <button type="submit" className="signup">Sign Up</button>
                </div>
             </form>
+
             <LoginButton>
                <Link to="/login">Login</Link>
-               <span></span>
             </LoginButton>
          </FormContainer>
          <ToastContainer />

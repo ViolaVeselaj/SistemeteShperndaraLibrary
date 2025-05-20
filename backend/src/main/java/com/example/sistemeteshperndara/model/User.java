@@ -49,4 +49,8 @@ public class User {
     @Column(name = "tenant_id", nullable = false)
     private Long tenantId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenant_id", insertable = false, updatable = false)
+    private Tenant tenant;
+
 }

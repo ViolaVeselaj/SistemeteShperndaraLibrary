@@ -33,7 +33,19 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest loginRequest) {
         try {
-            // ✅ Authentikimi i përdoruesit
+            // Gjej user-in me email + tenantId
+            Optional<User> optionalUser = userRepository.findByEmailAndTenantId(
+                    loginRequest.getEmail(),
+                    loginRequest.getTenantId()
+            );
+
+            if (optionalUser.isEmpty()) {
+                return ResponseEntity.status(401).body("User not found for the specified tenant");
+            }
+
+            User user = optionalUser.get();
+
+            // Verifiko password-in
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getEmail(),
@@ -41,29 +53,18 @@ public class AuthController {
                     )
             );
 
-            // ✅ Gjej user-in në databazë
-            Optional<User> optionalUser = userRepository.findByEmail(loginRequest.getEmail());
-            if (optionalUser.isEmpty()) {
-                return ResponseEntity.status(401).body("User not found");
-            }
-
-            User user = optionalUser.get();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-            // ✅ Gjenero JWT Token me informacionet e nevojshme
             String token = jwtService.generateToken(userDetails, user.getTenantId(), user.getId());
-
             if (token == null || token.isBlank()) {
                 return ResponseEntity.status(500).body("Failed to generate JWT token");
             }
 
-            // ✅ Merr rolin e parë të user-it (nëse ekziston)
             String roleName = user.getRoles().stream()
                     .findFirst()
                     .map(Role::getName)
                     .orElse("UNKNOWN");
 
-            // ✅ Krijo objektin AuthResponse për frontend-in
             AuthResponse response = new AuthResponse();
             response.setToken("Bearer " + token);
             response.setEmail(user.getEmail());
@@ -76,4 +77,5 @@ public class AuthController {
             return ResponseEntity.status(403).body("Login failed: " + ex.getMessage());
         }
     }
+
 }

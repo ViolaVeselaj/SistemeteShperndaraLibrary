@@ -50,7 +50,7 @@ public class SecurityConfig {
                     authz
                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                             .requestMatchers("/auth/login", "/users/add", "/users/login").permitAll()
-
+                            .requestMatchers("/tenants").permitAll()
                             // ✅ Swagger UI endpoints
                             .requestMatchers(
                                     "/v3/api-docs/**",
