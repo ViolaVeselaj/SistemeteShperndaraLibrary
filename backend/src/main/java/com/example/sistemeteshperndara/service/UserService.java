@@ -2,11 +2,12 @@ package com.example.sistemeteshperndara.service;
 
 import com.example.sistemeteshperndara.model.User;
 import com.example.sistemeteshperndara.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import com.example.sistemeteshperndara.security.CurrentUser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -22,15 +23,17 @@ public class UserService {
     @Autowired
     private CurrentUser currentUser;
 
+    @Cacheable("users")
     public List<User> getAllUsers() {
+        System.out.println("Leximi i përdoruesve nga databaza");
         return userRepository.findAll();
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     public void saveUser(User user) {
-        // Hashing i fjalëkalimit përpara se ta ruajmë
         String hashedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(hashedPassword); // Vendosni fjalëkalimin e hashuar
-        userRepository.save(user); // Ruani përdoruesin me fjalëkalimin e hashuar
+        user.setPassword(hashedPassword);
+        userRepository.save(user);
     }
 
     public User findByEmail(String email) {
@@ -42,7 +45,6 @@ public class UserService {
         return userRepository.findAllByTenantId(tenantId);
     }
 
-
     public boolean checkPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
@@ -52,5 +54,4 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
     }
-
 }

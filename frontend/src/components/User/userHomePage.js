@@ -22,6 +22,17 @@ const LayoutSelector = styled.select`
   color: white;
 `;
 
+const SuggestButton = styled.button`
+  margin-left: 1rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+`;
+
 const BookGrid = styled.div`
   display: ${({ layout }) => (layout === "single" ? "flex" : "grid")};
   flex-direction: column;
@@ -121,6 +132,24 @@ function UserHomePage() {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
   const [reviewData, setReviewData] = useState({ rating: 5, comment: "" });
+  const [showSuggestionForm, setShowSuggestionForm] = useState(false);
+  const [suggestionData, setSuggestionData] = useState({
+    title: "",
+    author: "",
+    genre: ""
+  });
+
+  const handleSubmitSuggestion = async () => {
+    try {
+      await axios.post("/api/book-suggestions", suggestionData);
+      alert("Sugjerimi u ruajt me sukses!");
+      setShowSuggestionForm(false);
+      setSuggestionData({ title: "", author: "", genre: "" });
+    } catch (error) {
+      console.error("Gabim gjatë ruajtjes së sugjerimit:", error);
+      alert("Dështoi ruajtja e sugjerimit.");
+    }
+  };
 
   const handleOpenReviewForm = (book) => {
     setSelectedBook(book);
@@ -191,28 +220,63 @@ function UserHomePage() {
       />
 
       <LayoutWrapper>
-        <LayoutSelector
-          value={layout}
-          onChange={(e) => setLayout(e.target.value)}
-        >
-          <option value="grid">Grid Layout</option>
-          <option value="single">Single Column</option>
-          <option value="carousel">Carousel</option>
-          <option value="horizontal">Sipas Zhanrit</option>
-        </LayoutSelector>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "1rem" }}>
+          <LayoutSelector
+            value={layout}
+            onChange={(e) => setLayout(e.target.value)}
+          >
+            <option value="grid">Grid Layout</option>
+            <option value="single">Single Column</option>
+            <option value="carousel">Carousel</option>
+            <option value="horizontal">Sipas Zhanrit</option>
+          </LayoutSelector>
 
-      
+          <SuggestButton onClick={() => setShowSuggestionForm(true)}>
+            Sugjero një libër
+          </SuggestButton>
+        </div>
+
+        {showSuggestionForm && (
+          <div style={{ background: "#222", padding: "2rem", borderRadius: "10px", color: "white", marginTop: "2rem" }}>
+            <h3>Sugjero një libër të ri</h3>
+
+            <label>Titulli:</label><br />
+            <input
+              type="text"
+              value={suggestionData.title}
+              onChange={(e) => setSuggestionData({ ...suggestionData, title: e.target.value })}
+            /><br /><br />
+
+            <label>Autori:</label><br />
+            <input
+              type="text"
+              value={suggestionData.author}
+              onChange={(e) => setSuggestionData({ ...suggestionData, author: e.target.value })}
+            /><br /><br />
+
+            <label>Zhanri:</label><br />
+            <input
+              type="text"
+              value={suggestionData.genre}
+              onChange={(e) => setSuggestionData({ ...suggestionData, genre: e.target.value })}
+            /><br /><br />
+
+            <button onClick={handleSubmitSuggestion}>Dërgo Sugjerimin</button>
+            <button onClick={() => setShowSuggestionForm(false)} style={{ marginLeft: "1rem" }}>Anulo</button>
+            </div>
+        )}
 
         {layout === "grid" && (
           <BookGrid layout="grid">
             {filteredBooks.map((book) => (
-               <BookCard key={book.id} >                <img
+              <BookCard key={book.id}>
+                <img
                   src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
                   alt={book.title}
                 />
-                <h3 onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }} >{book.title}</h3>
+                <h3 onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>{book.title}</h3>
                 <p>{book.author1}</p>
-                <button onClick={() => handleOpenReviewForm(book)} style={{ cursor: "pointer" }} >Shto Review</button>
+                <button onClick={() => handleOpenReviewForm(book)} style={{ cursor: "pointer" }}>Shto Review</button>
               </BookCard>
             ))}
           </BookGrid>
@@ -221,16 +285,15 @@ function UserHomePage() {
         {layout === "single" && (
           <BookGrid layout="single">
             {filteredBooks.map((book) => (
-                  <BookCard key={book.id} >        
-            <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
+              <BookCard key={book.id}>
+                <img
+                  src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
                   alt={book.title}
                 />
                 <div className="info">
-                  <h3 onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }} >{book.title} </h3>
+                  <h3 onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>{book.title}</h3>
                   <p className="author">{book.author1}</p>
-                  <p className="description">
-                    Përshkrimi do të vijë nga databaza në versionin e ardhshëm.
-                  </p>
+                  <p className="description">Përshkrimi do të vijë nga databaza në versionin e ardhshëm.</p>
                   <button onClick={() => handleOpenReviewForm(book)} style={{ cursor: "pointer" }}>Shto Review</button>
                 </div>
               </BookCard>
@@ -241,14 +304,14 @@ function UserHomePage() {
         {layout === "carousel" && (
           <CarouselWrapper>
             {filteredBooks.map((book) => (
-              <CarouselCard key={book.id} >
+              <CarouselCard key={book.id}>
                 <img
                   src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=60"
                   alt={book.title}
                 />
                 <h3 onClick={() => handleBookClick(book.id)} style={{ cursor: "pointer" }}>{book.title}</h3>
                 <p>{book.author1}</p>
-                <button onClick={() => handleOpenReviewForm(book)} style={{ cursor: "pointer" }} >Shto Review</button>
+                <button onClick={() => handleOpenReviewForm(book)} style={{ cursor: "pointer" }}>Shto Review</button>
               </CarouselCard>
             ))}
           </CarouselWrapper>
